@@ -97,8 +97,8 @@
                 $user = $_POST['username'];
                 $pass = $_POST['password'];
 
-                // Cek username dan password di database
-                $sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+                // Cek username dan password di database (case-sensitive dengan BINARY)
+                $sql = "SELECT * FROM users WHERE BINARY username = ? AND password = ?";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ss", $user, $pass);
                 $stmt->execute();
@@ -126,6 +126,7 @@
                 $conn->close();
             }
             ?>
+
             <form action="" method="POST">
                 <div class="form-group">
                     <label for="username">Username</label>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forget Password</title>
+    <title>Reset Password</title>
     <style>
         body {
             margin: 0;
@@ -60,8 +60,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>Forget Password</h1>
+        <h1>Reset Password</h1>
         <?php
+        if (isset($_GET['username'])) {
+            $user = $_GET['username'];
+
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Konfigurasi database
                 $host = 'localhost';
@@ -77,35 +80,36 @@
                     die("Koneksi gagal: " . $conn->connect_error);
                 }
 
-                // Ambil username dari form
-                $user = $_POST['username'];
+                // Ambil password baru dari form
+                $newPassword = $_POST['new_password'];
 
-                // Cek apakah username ada di database (case-sensitive)
-                $sql = "SELECT * FROM users WHERE BINARY username = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("s", $user);
-                $stmt->execute();
-                $result = $stmt->get_result();
+                // Update password di database
+                $updateSql = "UPDATE users SET password = ? WHERE username = ?";
+                $stmt = $conn->prepare($updateSql);
+                $stmt->bind_param("ss", $newPassword, $user);
 
-                if ($result->num_rows > 0) {
-                    // Redirect ke halaman ubah password dengan membawa username sebagai parameter
-                    header("Location: reset_password.php?username=" . urlencode($user));
-                    exit;
+                if ($stmt->execute()) {
+                    // Menampilkan alert jika password berhasil diubah
+                    echo "<script>alert('Password berhasil diubah!'); window.location.href = 'login.php';</script>";
                 } else {
-                    echo "<p style='color: red; text-align: center;'>Username tidak ditemukan!</p>";
+                    echo "<p class='message' style='color: red;'>Gagal mengubah password. Silakan coba lagi.</p>";
                 }
 
                 $stmt->close();
                 $conn->close();
             }
-            ?>
+        } else {
+            echo "<p class='message' style='color: red;'>Akses tidak valid!</p>";
+            exit;
+        }
+        ?>
 
         <form action="" method="POST">
             <div class="form-group">
-                <label for="username">Masukkan Username</label>
-                <input type="text" name="username" id="username" required>
+                <label for="new_password">Masukkan Password Baru</label>
+                <input type="password" name="new_password" id="new_password" required>
             </div>
-            <button type="submit" class="button">Submit</button>
+            <button type="submit" class="button">Ubah Password</button>
         </form>
     </div>
 </body>

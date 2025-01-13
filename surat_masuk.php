@@ -3,21 +3,34 @@ session_start();
 
 // Periksa apakah pengguna sudah login
 if (!isset($_SESSION['username'])) {
-    // Jika belum login, arahkan ke halaman login
     header("Location: login.php");
     exit;
 }
 
 include 'db.php';
 
+// Konfigurasi pagination
+$perPage = 3; // Jumlah data per halaman
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($currentPage - 1) * $perPage;
+
 // Mendapatkan nilai pencarian dari URL jika ada
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 
-// Menyusun SQL query dengan kondisi pencarian
-$sql = "SELECT * FROM surat_masuk WHERE nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ?";
-$stmt = $conn->prepare($sql);
+// Hitung total data
+$totalQuery = "SELECT COUNT(*) AS total FROM surat_masuk WHERE nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR sifat LIKE ?";
+$stmtTotal = $conn->prepare($totalQuery);
 $searchWildcard = "%$searchQuery%";
-$stmt->bind_param("sss", $searchWildcard, $searchWildcard, $searchWildcard);
+$stmtTotal->bind_param("ssss", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard);
+$stmtTotal->execute();
+$resultTotal = $stmtTotal->get_result();
+$totalData = $resultTotal->fetch_assoc()['total'];
+$totalPages = ceil($totalData / $perPage);
+
+// Query data dengan limit dan offset
+$sql = "SELECT * FROM surat_masuk WHERE nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR sifat LIKE ? LIMIT ? OFFSET ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ssssii", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard, $perPage, $offset);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -29,6 +42,55 @@ $result = $stmt->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Surat Masuk</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Gaya Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin: 20px 0;
+            padding: 0;
+        }
+
+        .pagination li {
+            margin: 0 5px;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 10px 15px;
+            color: white;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #0056b3;
+        }
+
+        .pagination .active {
+            background-color: #0056b3;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .pagination .disabled span {
+            display: inline-block;
+            padding: 10px 15px;
+            color: #ffffff;
+            background-color: #cccccc;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: default;
+        }
+
+        .pagination .disabled {
+            pointer-events: none;
+        }
+    </style>
+
 </head>
 <body>
     <!-- Sidebar -->
@@ -61,11 +123,10 @@ $result = $stmt->get_result();
         <div class="container">
             <h2>Daftar Surat Masuk</h2>
             <div class="search-bar">
-            <form action="surat_masuk.php" method="GET">
-                <input type="text" name="search" placeholder="Pencarian" value="<?= htmlspecialchars($searchQuery); ?>" />
-                <button class="btn btn-primary" type="submit">Search</button>
-            </form>
-
+                <form action="surat_masuk.php" method="GET">
+                    <input type="text" name="search" placeholder="Pencarian" value="<?= htmlspecialchars($searchQuery); ?>" />
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
             </div>
             <a href="tambah_surat_masuk.php" class="btn btn-primary">Tambah Surat +</a>
             <table class="table">
@@ -83,7 +144,7 @@ $result = $stmt->get_result();
                 </thead>
                 <tbody>
                     <?php if ($result->num_rows > 0): ?>
-                        <?php $no = 1; while ($row = $result->fetch_assoc()): ?>
+                        <?php $no = $offset + 1; while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td><?= $no++; ?></td>
                                 <td><?= htmlspecialchars($row['nomor_surat']); ?></td>
@@ -94,13 +155,9 @@ $result = $stmt->get_result();
                                 <td><?= htmlspecialchars($row['sifat']); ?></td>
                                 <td>
                                     <a href="cetak.php?id=<?= $row['id_surat']; ?>" class="btn btn-secondary">Cetak</a>
-                                    <?php
-                                    // Pastikan pengguna sudah login dan memiliki role "admin"
-                                    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                                        // Jika role adalah admin, tampilkan tombol Edit
-                                        echo '<a href="edit.php?id=' . $row['id_surat'] . '" class="btn btn-warning">Edit</a>';
-                                    }
-                                    ?>
+                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                                        <a href="edit.php?id=<?= $row['id_surat']; ?>" class="btn btn-warning">Edit</a>
+                                    <?php endif; ?>
                                     <a href="hapus_surat_masuk.php?id=<?= $row['id_surat']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
                                 </td>
                             </tr>
@@ -112,6 +169,30 @@ $result = $stmt->get_result();
                     <?php endif; ?>
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <ul class="pagination">
+                <?php if ($currentPage > 1): ?>
+                    <li><a href="?page=<?= $currentPage - 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">&laquo; Prev</a></li>
+                <?php else: ?>
+                    <li class="disabled"><span>&laquo; Prev</span></li>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li>
+                        <a href="?page=<?= $i; ?>&search=<?= htmlspecialchars($searchQuery); ?>" class="<?= $i === $currentPage ? 'active' : ''; ?>">
+                            <?= $i; ?>
+                        </a>
+                    </li>
+                <?php endfor; ?>
+
+                <?php if ($currentPage < $totalPages): ?>
+                    <li><a href="?page=<?= $currentPage + 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">Next &raquo;</a></li>
+                <?php else: ?>
+                    <li class="disabled"><span>Next &raquo;</span></li>
+                <?php endif; ?>
+            </ul>
+
         </div>
     </div>
 
