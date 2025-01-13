@@ -123,7 +123,7 @@ if (!isset($_SESSION['username'])) {
         <div class="topbar">
             <h2>DINAS PEMBERDAYAAN MASYARAKAT DAN DESA</h2>
             <div class="profile">
-                <span><?= htmlspecialchars($_SESSION['username']); ?></span>
+                <span><?= htmlspecialchars($_SESSION['role']); ?></span>
                 <div class="profile-icon">👤</div>
             </div>
         </div>
@@ -160,31 +160,5 @@ if (!isset($_SESSION['username'])) {
                 <p>https://dpmd.pamekasankab.go.id/</p>
             </footer>
         </div>
-
-
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function showContent(menu) {
-            // Sembunyikan semua konten
-            document.getElementById('dashboard-content').classList.add('hidden');
-            document.getElementById('administrasi-content').classList.add('hidden');
-            document.getElementById('inventaris-content').classList.add('hidden');
-
-            // Tampilkan konten yang sesuai
-            if (menu === 'administrasi') {
-                document.getElementById('administrasi-content').classList.remove('hidden');
-            } else if (menu === 'inventaris') {
-                document.getElementById('inventaris-content').classList.remove('hidden');
-            } else {
-                document.getElementById('dashboard-content').classList.remove('hidden');
-            }
-        }
-
-        function logout() {
-            if (confirm('Apakah Anda yakin ingin logout?')) {
-                window.location.href = 'logout.php';
-            }
-        }
-    </script> -->
 </body>
 </html>

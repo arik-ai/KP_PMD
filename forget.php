@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Forgot Password</title>
     <style>
         body {
             margin: 0;
@@ -14,7 +14,7 @@
             display: flex;
             height: 100vh;
         }
-        .login-section {
+        .forgot-password-section {
             width: 35%;
             background-color: #ffffff;
             display: flex;
@@ -23,7 +23,7 @@
             padding: 30px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
-        .login-section h1 {
+        .forgot-password-section h1 {
             margin-bottom: 20px;
             color: #333;
             text-align: center;
@@ -43,7 +43,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        .login-button {
+        .submit-button {
             width: 15%;
             padding: 10px;
             font-size: 16px;
@@ -53,97 +53,79 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .image-section {
-            width: 65%;
-            background-image: url('pmk.png'); 
-            background-size: cover;
-            background-position: center;
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
         }
-        .logo {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .logo img {
-            height: 300px;
-            margin-right: 15px;
+        .back-link a {
+            text-decoration: none;
+            color: #007bff;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="login-section">
-            <div class="logo">
-                <img src="logo.png" alt="Logo"> 
-            </div>
-            <h1>Login</h1>
+        <div class="forgot-password-section">
+            <h1>Forgot Password</h1>
             <?php
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                // Konfigurasi database
                 $host = 'localhost';
                 $username = 'root';
                 $password = '';
                 $database = 'dpmd';
 
-                // Membuat koneksi ke database
+                // Create connection
                 $conn = new mysqli($host, $username, $password, $database);
 
-                // Cek koneksi
+                // Check connection
                 if ($conn->connect_error) {
-                    die("Koneksi gagal: " . $conn->connect_error);
+                    die("Connection failed: " . $conn->connect_error);
                 }
 
-                // Ambil data dari form login
-                $user = $_POST['username'];
-                $pass = $_POST['password'];
+                // Get the username
+                $user_input = $_POST['username'];
 
-                // Cek username dan password di database
-                $sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+                // Query to find user by username (no email column)
+                $sql = "SELECT * FROM users WHERE username = ?";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ss", $user, $pass);
+                $stmt->bind_param("s", $user_input); // Bind only the username
                 $stmt->execute();
                 $result = $stmt->get_result();
 
-                // Jika username dan password ditemukan
                 if ($result->num_rows > 0) {
+                    // User found
                     $row = $result->fetch_assoc();
-                    session_start();
-                    $_SESSION['username'] = $row['username'];
-                    $_SESSION['role'] = $row['role'];
 
-                    // Redirect berdasarkan peran
-                    if ($row['role'] === 'admin') {
-                        header("Location: dashboard.php");
-                    } else {
-                        header("Location: dashboard.php");
-                    }
-                    exit;
+                    // Generate reset password link (you can implement a real password reset mechanism here)
+                    $reset_link = "reset_password.php" . md5($row['username'] . time());
+
+                    // Simulate sending the reset link (since there's no email column in your table)
+                    // Here you can manually redirect the user to the reset page, or simulate sending an email.
+                    echo "<p style='color: green; text-align: center;'>A password reset link has been generated. Please check your email (if available).</p>";
+
+                    // In this case, you may also display the reset link as a placeholder for testing:
+                    echo "<p style='color: green; text-align: center;'>Reset Link: <a href='$reset_link'>$reset_link</a></p>";
                 } else {
-                    echo "<p style='color: red; text-align: center;'>Username atau password salah!</p>";
+                    echo "<p style='color: red; text-align: center;'>Username not found!</p>";
                 }
 
                 $stmt->close();
                 $conn->close();
             }
             ?>
+
+
             <form action="" method="POST">
                 <div class="form-group">
-                    <label for="username">Username</label>
+                    <label for="username">Enter Username or Email</label>
                     <input type="text" name="username" id="username" required>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" required>
-                </div>
-
-                <div class="forgot-password-link">
-                    <p><a href="forget.php" style="text-decoration: none; color: #007bff;">Forget Password?</a></p>
-                </div>
-
-                <button type="submit" class="login-button">Login</button>
+                <button type="submit" class="submit-button">Submit</button>
             </form>
+            <div class="back-link">
+                <a href="login.php">Back to Login</a>
+            </div>
         </div>
-        <div class="image-section"></div>
     </div>
 </body>
 </html>

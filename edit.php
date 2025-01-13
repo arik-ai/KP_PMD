@@ -92,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <ul class="sidebar-menu">
             <li><a href="dashboard.php"><span class="icon">🏠</span> Dashboard</a></li>
-            <li><a href="index.php" class="active"><span class="icon">📂</span> Data Surat Masuk</a></li>
+            <li><a href="surat_masuk.php" class="active"><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
@@ -106,11 +106,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="topbar">
             <h2>Administrasi</h2>
             <div class="profile">
-                <div class="profile-icon">&#128100;</div>
-                <span>Admin/Operator</span>
+                <span><?= htmlspecialchars($_SESSION['role']); ?></span>
+                <div class="profile-icon">👤</div>
             </div>
         </div>
-
         <!-- Form Edit Surat Masuk -->
         <div class="container">
             <h2>Edit Surat Masuk</h2>
