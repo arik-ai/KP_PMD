@@ -113,9 +113,9 @@
 
                     // Redirect berdasarkan peran
                     if ($row['role'] === 'admin') {
-                        header("Location: surat_masuk.php");
+                        header("Location: dashboard.php");
                     } else {
-                        header("Location: surat_masuk.php");
+                        header("Location: dashboard.php");
                     }
                     exit;
                 } else {
