@@ -152,6 +152,7 @@ body, html {
 
 /* Table */
 .table {
+    text-align: center;
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
@@ -161,13 +162,14 @@ body, html {
 
 .table th,
 .table td {
+    text-align: center;
     padding: 12px 15px;
     border: 1px solid #ddd;
-    text-align: left;
 }
 
 .table th {
     background-color: #e6f7ff; /* Warna header tabel */
+    text-align: center;
     color: #333;
 }
 

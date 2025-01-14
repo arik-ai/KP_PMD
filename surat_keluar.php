@@ -9,32 +9,19 @@ if (!isset($_SESSION['username'])) {
 
 include 'db.php';
 
-// Proses hapus data jika ada parameter `id`
-if (isset($_GET['id'])) {
-    $id = (int) $_GET['id']; // Pastikan ID adalah angka untuk keamanan
-
-    // Query hapus data
-    $sql = "DELETE FROM surat_masuk WHERE id_surat = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
-
-    if ($stmt->execute()) {
-        echo "<script>alert('Data berhasil dihapus!'); window.location.href='surat_masuk.php';</script>";
-    } else {
-        echo "Error: " . $conn->error;
-    }
-}
+// Tangkap notifikasi nomor surat baru
+$newSuratNo = isset($_GET['new_surat_no']) ? $_GET['new_surat_no'] : '';
 
 // Konfigurasi pagination
-$perPage = 3; // Jumlah data per halaman
+$perPage = 3;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($currentPage - 1) * $perPage;
 
-// Mendapatkan nilai pencarian dari URL jika ada
+// Pencarian
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 
 // Hitung total data
-$totalQuery = "SELECT COUNT(*) AS total FROM surat_masuk WHERE nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR sifat LIKE ?";
+$totalQuery = "SELECT COUNT(*) AS total FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ?";
 $stmtTotal = $conn->prepare($totalQuery);
 $searchWildcard = "%$searchQuery%";
 $stmtTotal->bind_param("ssss", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard);
@@ -44,7 +31,7 @@ $totalData = $resultTotal->fetch_assoc()['total'];
 $totalPages = ceil($totalData / $perPage);
 
 // Query data dengan limit dan offset
-$sql = "SELECT * FROM surat_masuk WHERE nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR sifat LIKE ? LIMIT ? OFFSET ?";
+$sql = "SELECT * FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ? LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssssii", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard, $perPage, $offset);
 $stmt->execute();
@@ -56,10 +43,36 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Surat Masuk</title>
+    <title>Daftar Surat Keluar</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Gaya Pagination */
+        .notification {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .notification button:hover {
+            background-color: #218838;
+        }
+
         .pagination {
             display: flex;
             justify-content: center;
@@ -101,15 +114,9 @@ $result = $stmt->get_result();
             border-radius: 5px;
             cursor: default;
         }
-
-        .pagination .disabled {
-            pointer-events: none;
-        }
     </style>
-
 </head>
 <body>
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
             <img src="logo.png" alt="Logo" />
@@ -126,7 +133,6 @@ $result = $stmt->get_result();
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Topbar -->
         <div class="topbar">
             <h2>Administrasi</h2>
             <div class="profile">
@@ -134,17 +140,25 @@ $result = $stmt->get_result();
                 <div class="profile-icon">👤</div>
             </div>
         </div>
-
-        <!-- Table Content -->
         <div class="container">
-            <h2>Daftar Surat Masuk</h2>
+            <h2>Daftar Surat Keluar</h2>
+
+            <!-- Tampilkan notifikasi jika ada -->
+            <?php if (!empty($newSuratNo)): ?>
+                <div class="notification" id="notification">
+                    Surat berhasil ditambah dengan No. Surat: <?= htmlspecialchars($newSuratNo); ?>
+                    <button id="close-notification">Oke</button>
+                </div>
+            <?php endif; ?>
+
+            <!-- Form pencarian -->
             <div class="search-bar">
-                <form action="surat_masuk.php" method="GET">
+                <form action="surat_keluar.php" method="GET">
                     <input type="text" name="search" placeholder="Pencarian" value="<?= htmlspecialchars($searchQuery); ?>" />
                     <button class="btn btn-primary" type="submit">Search</button>
                 </form>
             </div>
-            <a href="tambah_surat_masuk.php" class="btn btn-primary">Tambah Surat +</a>
+            <a href="tambah_surat_keluar.php" class="btn btn-primary">Tambah Surat +</a>
             <table class="table">
                 <thead>
                     <tr>
@@ -152,8 +166,7 @@ $result = $stmt->get_result();
                         <th>No. Surat</th>
                         <th>Perihal</th>
                         <th>Tanggal Surat</th>
-                        <th>Diterima Tanggal</th>
-                        <th>Instansi Pengirim</th>
+                        <th>Penerima</th>
                         <th>Sifat</th>
                         <th>Aksi</th>
                     </tr>
@@ -163,24 +176,22 @@ $result = $stmt->get_result();
                         <?php $no = $offset + 1; while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td><?= $no++; ?></td>
-                                <td><?= htmlspecialchars($row['nomor_surat']); ?></td>
-                                <td><?= htmlspecialchars($row['perihal']); ?></td>
-                                <td><?= htmlspecialchars($row['tgl_surat']); ?></td>
-                                <td><?= htmlspecialchars($row['terima_tanggal']); ?></td>
-                                <td><?= htmlspecialchars($row['pengirim']); ?></td>
-                                <td><?= htmlspecialchars($row['sifat']); ?></td>
+                                <td><?= htmlspecialchars($row['no_surat']); ?></td>
+                                <td><?= htmlspecialchars($row['perihal_surat']); ?></td>
+                                <td><?= htmlspecialchars($row['tanggal_surat']); ?></td>
+                                <td><?= htmlspecialchars($row['penerima']); ?></td>
+                                <td><?= htmlspecialchars($row['sifat_surat']); ?></td>
                                 <td>
-                                    <a href="cetak.php?id=<?= $row['id_surat']; ?>" class="btn btn-secondary">Cetak</a>
-                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                                        <a href="edit.php?id=<?= $row['id_surat']; ?>" class="btn btn-warning">Edit</a>
-                                    <?php endif; ?>
-                                    <a href="?id=<?= $row['id_surat']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
+                                    <a href="upload.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-primary">Upload</a>
+                                    <a href="cetak.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-secondary">Cetak</a>
+                                    <a href="edit_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-warning">Edit</a>
+                                    <a href="surat_keluar.php?hapus_id=<?= $row['id_surat_keluar']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="8" class="no-data">Tidak ada data.</td>
+                            <td colspan="7" class="no-data">Tidak ada data.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -189,32 +200,54 @@ $result = $stmt->get_result();
             <!-- Pagination -->
             <ul class="pagination">
                 <?php if ($currentPage > 1): ?>
-                    <li><a href="?page=<?= $currentPage - 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">&laquo; Prev</a></li>
+                    <li><a href="?page=<?= $currentPage - 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>&new_surat_no=<?= urlencode($newSuratNo); ?>">&laquo; Prev</a></li>
                 <?php else: ?>
                     <li class="disabled"><span>&laquo; Prev</span></li>
                 <?php endif; ?>
 
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                     <li>
-                        <a href="?page=<?= $i; ?>&search=<?= htmlspecialchars($searchQuery); ?>" class="<?= $i === $currentPage ? 'active' : ''; ?>">
+                        <a href="?page=<?= $i; ?>&search=<?= htmlspecialchars($searchQuery); ?>&new_surat_no=<?= urlencode($newSuratNo); ?>" class="<?= $i === $currentPage ? 'active' : ''; ?>">
                             <?= $i; ?>
                         </a>
                     </li>
                 <?php endfor; ?>
 
                 <?php if ($currentPage < $totalPages): ?>
-                    <li><a href="?page=<?= $currentPage + 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">Next &raquo;</a></li>
+                    <li><a href="?page=<?= $currentPage + 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>&new_surat_no=<?= urlencode($newSuratNo); ?>">Next &raquo;</a></li>
                 <?php else: ?>
                     <li class="disabled"><span>Next &raquo;</span></li>
                 <?php endif; ?>
             </ul>
-
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
         &copy; Sistem Informasi 2023
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const notification = document.getElementById('notification');
+            const closeBtn = document.getElementById('close-notification');
+
+            // Cek status notifikasi di sessionStorage
+            const isNotifClosed = sessionStorage.getItem('notifClosed');
+            
+            // Tampilkan notifikasi hanya jika belum ditutup dan ada query parameter 'new_surat_no'
+            if (notification && !isNotifClosed && window.location.search.includes('new_surat_no')) {
+                notification.style.display = 'block';
+            }
+
+            // Tambahkan event listener untuk tombol Oke
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function () {
+                    notification.style.display = 'none';
+                    // Simpan status ke sessionStorage
+                    sessionStorage.setItem('notifClosed', 'true');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

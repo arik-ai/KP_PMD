@@ -113,9 +113,9 @@
 
                     // Redirect berdasarkan peran
                     if ($row['role'] === 'admin') {
-                        header("Location: dashboard.php");
+                        header("Location: index.php");
                     } else {
-                        header("Location: dashboard.php");
+                        header("Location: index.php");
                     }
                     exit;
                 } else {

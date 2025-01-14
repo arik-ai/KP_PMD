@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <img src="logo.png" alt="Logo">
         </div>
         <ul class="sidebar-menu">
-            <li><a href="dashboard.php"><span class="icon">🏠</span> Dashboard</a></li>
+            <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" class="active"><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
@@ -135,6 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="form-row">
                     <button type="submit" class="btn btn-primary">Tambah Surat</button>
+                    <a href="surat_masuk.php" class="btn btn-secondary btn-equal">Batal</a>
                 </div>
             </form>
         </div>

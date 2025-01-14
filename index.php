@@ -115,7 +115,7 @@ if (!isset($_SESSION['username'])) {
 <body>
     <div class="sidebar">
         <img src="logo.png" alt="Administrasi" class="img-fluid">
-        <a href="#" class="active" onclick="showContent('dashboard')">Dashboard</a>
+        <a href="index.php" class="active" onclick="showContent('dashboard')">Dashboard</a>
         <a href="logout.php" onclick="logout()">Logout</a>
     </div>
     <div class="main-content">
