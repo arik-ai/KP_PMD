@@ -26,7 +26,7 @@ if (isset($_GET['id'])) {
 }
 
 // Konfigurasi pagination
-$perPage = 3; // Jumlah data per halaman
+$perPage = 10; // Jumlah data per halaman
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($currentPage - 1) * $perPage;
 

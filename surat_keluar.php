@@ -13,7 +13,7 @@ include 'db.php';
 $newSuratNo = isset($_GET['new_surat_no']) ? $_GET['new_surat_no'] : '';
 
 // Konfigurasi pagination
-$perPage = 3;
+$perPage = 10;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($currentPage - 1) * $perPage;
 
@@ -200,21 +200,21 @@ $result = $stmt->get_result();
             <!-- Pagination -->
             <ul class="pagination">
                 <?php if ($currentPage > 1): ?>
-                    <li><a href="?page=<?= $currentPage - 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>&new_surat_no=<?= urlencode($newSuratNo); ?>">&laquo; Prev</a></li>
+                    <li><a href="?page=<?= $currentPage - 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">&laquo; Prev</a></li>
                 <?php else: ?>
                     <li class="disabled"><span>&laquo; Prev</span></li>
                 <?php endif; ?>
 
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                     <li>
-                        <a href="?page=<?= $i; ?>&search=<?= htmlspecialchars($searchQuery); ?>&new_surat_no=<?= urlencode($newSuratNo); ?>" class="<?= $i === $currentPage ? 'active' : ''; ?>">
+                        <a href="?page=<?= $i; ?>&search=<?= htmlspecialchars($searchQuery); ?>" class="<?= $i === $currentPage ? 'active' : ''; ?>">
                             <?= $i; ?>
                         </a>
                     </li>
                 <?php endfor; ?>
 
                 <?php if ($currentPage < $totalPages): ?>
-                    <li><a href="?page=<?= $currentPage + 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>&new_surat_no=<?= urlencode($newSuratNo); ?>">Next &raquo;</a></li>
+                    <li><a href="?page=<?= $currentPage + 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">Next &raquo;</a></li>
                 <?php else: ?>
                     <li class="disabled"><span>Next &raquo;</span></li>
                 <?php endif; ?>
@@ -231,20 +231,20 @@ $result = $stmt->get_result();
             const notification = document.getElementById('notification');
             const closeBtn = document.getElementById('close-notification');
 
-            // Cek status notifikasi di sessionStorage
-            const isNotifClosed = sessionStorage.getItem('notifClosed');
-            
-            // Tampilkan notifikasi hanya jika belum ditutup dan ada query parameter 'new_surat_no'
-            if (notification && !isNotifClosed && window.location.search.includes('new_surat_no')) {
-                notification.style.display = 'block';
+            // Cek status notifikasi di localStorage
+            if (notification) {
+                const isNotifClosed = localStorage.getItem('notifClosed');
+                if (isNotifClosed === 'true') {
+                    notification.style.display = 'none';
+                }
             }
 
             // Tambahkan event listener untuk tombol Oke
             if (closeBtn) {
                 closeBtn.addEventListener('click', function () {
                     notification.style.display = 'none';
-                    // Simpan status ke sessionStorage
-                    sessionStorage.setItem('notifClosed', 'true');
+                    // Simpan status ke localStorage
+                    localStorage.setItem('notifClosed', 'true');
                 });
             }
         });
