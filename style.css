@@ -122,10 +122,12 @@ body, html {
     color: #333;
 }
 
+/* Search Bar */
 .search-bar {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    padding: 5px 15px;
 }
 
 .search-bar input {
@@ -150,26 +152,96 @@ body, html {
     background-color: #005bb5;
 }
 
+/* Filter Lokasi */
+.filter-lokasi {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.filter-lokasi select {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    width: 250px;
+    margin-right: 10px;
+}
+
+.filter-lokasi button {
+    padding: 10px 20px;
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filter-lokasi button:hover {
+    background-color: #005bb5;
+}
+
+/* Export Buttons */
+.export-buttons {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+}
+
+.export-buttons .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.export-buttons .btn-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.export-buttons .btn-success:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.export-buttons .btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.export-buttons .btn-danger:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+.export-buttons .btn:active {
+    transform: scale(0.98);
+}
+
 /* Table */
 .table {
-    text-align: center;
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
     border-radius: 8px;
     overflow: hidden;
+    text-align: center;
 }
 
 .table th,
 .table td {
-    text-align: center;
     padding: 12px 15px;
     border: 1px solid #ddd;
 }
 
 .table th {
     background-color: #e6f7ff; /* Warna header tabel */
-    text-align: center;
     color: #333;
 }
 
@@ -190,7 +262,7 @@ body, html {
 }
 
 .btn-primary {
-    background-color: #0d7fd6;
+    background-color: #0078d4;
 }
 
 .btn-secondary {
@@ -198,7 +270,7 @@ body, html {
 }
 
 .btn-warning {
-    background-color: #db9118;
+    background-color: #f39c12;
 }
 
 .btn-danger {
