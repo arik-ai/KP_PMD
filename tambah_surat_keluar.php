@@ -15,17 +15,24 @@ function generateNoSurat($conn, $tanggal_surat, $kodeSurat) {
     $kodeDinas = "432.312";
     $tahunSurat = date("Y", strtotime($tanggal_surat));
 
-    $query = "SELECT COUNT(*) AS total FROM surat_keluar WHERE YEAR(tanggal_surat) = ?";
+    // Ambil nomor urut terakhir dari database berdasarkan tahun surat
+    $query = "SELECT MAX(CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(no_surat, '/', 2), '/', -1) AS UNSIGNED)) AS max_no 
+              FROM surat_keluar WHERE YEAR(tanggal_surat) = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $tahunSurat);
     $stmt->execute();
     $result = $stmt->get_result();
-    $totalSurat = $result->fetch_assoc()['total'] + 1;
+    $maxNo = $result->fetch_assoc()['max_no'];
 
-    $noUrut = str_pad($totalSurat, 2, "0", STR_PAD_LEFT);
+    // Jika tidak ada data sebelumnya, mulai dari 1
+    $nextNo = $maxNo ? $maxNo + 1 : 1;
+
+    // Format nomor urut agar selalu 2 digit
+    $noUrut = str_pad($nextNo, 2, "0", STR_PAD_LEFT);
 
     return "$kodeSurat/$noUrut/$kodeDinas/$tahunSurat";
 }
+
 
 // Proses penyimpanan data ke database jika form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -43,10 +50,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sssss", $no_surat, $tanggal_surat, $perihal_surat, $penerima, $sifat_surat);
 
     if ($stmt->execute()) {
-        // Jika berhasil, arahkan ke surat_keluar.php dengan parameter no_surat
-        header("Location: surat_keluar.php?new_surat_no=" . urlencode($no_surat));
+        // Jika berhasil, arahkan ke detail_surat.php dengan parameter no_surat
+        header("Location: detail_surat_keluar.php?no_surat=" . urlencode($no_surat));
         exit;
-    } else {
+    }else {
         echo "Error: " . $stmt->error;
     }
 }
@@ -67,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <ul class="sidebar-menu">
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
+            <li><a href="surat_masuk.php" ><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php" class="active"><span class="icon">📤</span> Data Surat Keluar</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>

@@ -20,6 +20,21 @@ $offset = ($currentPage - 1) * $perPage;
 // Pencarian
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 
+// Proses penghapusan surat
+if (isset($_GET['hapus_id'])) {
+    $hapusId = intval($_GET['hapus_id']); // Sanitasi input
+    $deleteQuery = "DELETE FROM surat_keluar WHERE id_surat_keluar = ?";
+    $stmtDelete = $conn->prepare($deleteQuery);
+    $stmtDelete->bind_param("i", $hapusId);
+
+    if ($stmtDelete->execute()) {
+        header("Location: surat_keluar.php?message=deleted");
+        exit;
+    } else {
+        echo "Gagal menghapus data.";
+    }
+}
+
 // Hitung total data
 $totalQuery = "SELECT COUNT(*) AS total FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ?";
 $stmtTotal = $conn->prepare($totalQuery);
@@ -123,8 +138,8 @@ $result = $stmt->get_result();
         </div>
         <ul class="sidebar-menu">
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
-            <li><a href="surat_masuk.php" class="active"><span class="icon">📂</span> Data Surat Masuk</a></li>
-            <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
+            <li><a href="surat_masuk.php" ><span class="icon">📂</span> Data Surat Masuk</a></li>
+            <li><a href="surat_keluar.php" class="active"><span class="icon">📤</span> Data Surat Keluar</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
@@ -226,25 +241,21 @@ $result = $stmt->get_result();
         &copy; Sistem Informasi 2023
     </footer>
 
+    <!-- Tambahkan JavaScript untuk mengelola notifikasi -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const notification = document.getElementById('notification');
-            const closeBtn = document.getElementById('close-notification');
+        document.addEventListener("DOMContentLoaded", function () {
+            const notification = document.getElementById("notification");
+            const closeNotificationButton = document.getElementById("close-notification");
 
-            // Cek status notifikasi di localStorage
             if (notification) {
-                const isNotifClosed = localStorage.getItem('notifClosed');
-                if (isNotifClosed === 'true') {
-                    notification.style.display = 'none';
+                // Periksa jika notifikasi pernah ditutup
+                if (sessionStorage.getItem("notificationClosed") === "true") {
+                    notification.style.display = "none";
                 }
-            }
 
-            // Tambahkan event listener untuk tombol Oke
-            if (closeBtn) {
-                closeBtn.addEventListener('click', function () {
-                    notification.style.display = 'none';
-                    // Simpan status ke localStorage
-                    localStorage.setItem('notifClosed', 'true');
+                closeNotificationButton.addEventListener("click", function () {
+                    notification.style.display = "none";
+                    sessionStorage.setItem("notificationClosed", "true"); // Tandai notifikasi sudah ditutup
                 });
             }
         });
