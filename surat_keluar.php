@@ -198,8 +198,10 @@ $result = $stmt->get_result();
                                 <td><?= htmlspecialchars($row['sifat_surat']); ?></td>
                                 <td>
                                     <a href="upload.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-primary">Upload</a>
-                                    <a href="cetak.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-secondary">Cetak</a>
+                                    <a href="cetak_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-secondary">Cetak</a>
+                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                                     <a href="edit_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-warning">Edit</a>
+                                    <?php endif; ?>
                                     <a href="surat_keluar.php?hapus_id=<?= $row['id_surat_keluar']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
                                 </td>
                             </tr>

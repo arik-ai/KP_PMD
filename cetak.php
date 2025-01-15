@@ -24,10 +24,6 @@ if (isset($_GET['id'])) {
         // Path file dokumen
         $file_path = __DIR__ . '/uploads/' . $dokumen;
 
-        // Debugging path dan dokumen
-        echo "Nama dokumen: " . $dokumen . "<br>";
-        echo "Path file: " . $file_path . "<br>";
-
         if (!empty($dokumen) && file_exists($file_path)) {
             // Header untuk mengunduh file
             $file_extension = pathinfo($file_path, PATHINFO_EXTENSION);
@@ -51,12 +47,15 @@ if (isset($_GET['id'])) {
             header('Content-Length: ' . filesize($file_path));
             readfile($file_path);
         } else {
-            echo "File tidak ditemukan di path: " . $file_path;
+            // Gunakan alert untuk menampilkan pesan jika file tidak ditemukan
+            echo "<script>alert('File surat tidak ditemukan.'); window.location.href = 'surat_masuk.php';</script>";
         }
     } else {
-        echo "Data dokumen tidak ditemukan untuk ID: " . $id;
+        // Gunakan alert untuk menampilkan pesan jika data dokumen tidak ditemukan
+        echo "<script>alert('Data dokumen tidak ditemukan untuk ID: " . $id . "'); window.location.href = 'surat_masuk.php';</script>";
     }
 } else {
-    echo "ID tidak valid.";
+    // Gunakan alert untuk menampilkan pesan jika ID tidak valid
+    echo "<script>alert('ID tidak valid.'); window.location.href = 'surat_masuk.php';</script>";
 }
 ?>
