@@ -127,6 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="form-row">
                     <button type="submit" class="btn btn-primary">Tambah Surat</button>
+                    <a href="surat_keluar.php" class="btn btn-secondary btn-equal">Batal</a>
                 </div>
             </form>
         </div>

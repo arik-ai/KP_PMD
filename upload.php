@@ -17,24 +17,25 @@ if (!isset($_GET['id'])) {
 
 $idSuratKeluar = intval($_GET['id']); // Sanitasi input
 
-// Proses unggah file
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_FILES['file_surat']) && $_FILES['file_surat']['error'] === UPLOAD_ERR_OK) {
-        $fileTmpPath = $_FILES['file_surat']['tmp_name'];
-        $fileName = $_FILES['file_surat']['name'];
-        $fileSize = $_FILES['file_surat']['size'];
-        $fileType = $_FILES['file_surat']['type'];
+// Cek apakah file sudah pernah diunggah
+$queryCheck = "SELECT dokumen_surat FROM surat_keluar WHERE id_surat_keluar = ?";
+$stmtCheck = $conn->prepare($queryCheck);
+$stmtCheck->bind_param("i", $idSuratKeluar);
+$stmtCheck->execute();
+$stmtCheck->bind_result($existingFile);
+$stmtCheck->fetch();
+$stmtCheck->close();
 
-        // Hapus validasi ekstensi file, atau Anda bisa menambahkan beberapa ekstensi yang ingin dibatasi
-        // $allowedExtensions = ['pdf', 'doc', 'docx'];
-        // $fileNameCmps = explode(".", $fileName);
-        // $fileExtension = strtolower(end($fileNameCmps));
-        // if (!in_array($fileExtension, $allowedExtensions)) {
-        //     $errorMsg = "Ekstensi file tidak diizinkan. Hanya file PDF, DOC, atau DOCX yang diperbolehkan.";
-        //     exit;
-        // } else {
-            // Gunakan nama asli file yang diunggah
-            $newFileName = $fileName;
+if ($existingFile) {
+    $errorMsg = "File sudah diunggah sebelumnya. Tidak dapat mengunggah ulang.";
+} else {
+    // Proses unggah file
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_FILES['file_surat']) && $_FILES['file_surat']['error'] === UPLOAD_ERR_OK) {
+            $fileTmpPath = $_FILES['file_surat']['tmp_name'];
+            $fileName = $_FILES['file_surat']['name'];
+
+            $newFileName = $fileName; // Gunakan nama asli file yang diunggah
 
             // Tentukan folder tujuan penyimpanan
             $uploadFileDir = 'uploads/';
@@ -59,9 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $errorMsg = "Gagal memindahkan file ke direktori tujuan.";
             }
-        // }
-    } else {
-        $errorMsg = "Tidak ada file yang diunggah atau terjadi kesalahan dalam proses unggah.";
+        } else {
+            $errorMsg = "Tidak ada file yang diunggah atau terjadi kesalahan dalam proses unggah.";
+        }
     }
 }
 ?>
@@ -75,19 +76,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Unggah File Surat</h2>
-        <?php if (isset($errorMsg)): ?>
-            <div class="error-message"><?= htmlspecialchars($errorMsg); ?></div>
-        <?php endif; ?>
-        <form action="upload.php?id=<?= htmlspecialchars($idSuratKeluar); ?>" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="file_surat">Pilih File:</label>
-                <input type="file" name="file_surat" id="file_surat" required>
+        <!-- Sidebar -->
+        <div class="sidebar">
+        <div class="logo">
+            <img src="logo.png" alt="Logo" />
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
+            <li><a href="surat_masuk.php" class="active"><span class="icon">📂</span> Data Surat Masuk</a></li>
+            <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
+            <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
+            <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
+            <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h2>Administrasi</h2>
+            <div class="profile">
+                <span><?= htmlspecialchars($_SESSION['role']); ?></span>
+                <div class="profile-icon">👤</div>
             </div>
-            <button type="submit" class="btn btn-primary">Unggah</button>
-            <a href="surat_keluar.php" class="btn btn-secondary">Kembali</a>
-        </form>
+        </div>
+    <div class="container">
+        <h2>Upload File Surat</h2>
+        <?php if (isset($errorMsg)): ?>
+            <div class="error-message">
+                <?= htmlspecialchars($errorMsg); ?>
+                <a href="surat_keluar.php" class="btn btn-secondary">Kembali</a>
+            </div>
+        <?php else: ?>
+            <form action="upload.php?id=<?= htmlspecialchars($idSuratKeluar); ?>" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="file_surat">Pilih File:</label>
+                    <input type="file" name="file_surat" id="file_surat" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+                <a href="surat_keluar.php" class="btn btn-secondary">Kembali</a>
+            </form>
+        <?php endif; ?>
     </div>
 </body>
-</html> 
+</html>
