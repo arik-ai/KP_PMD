@@ -134,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <footer>
-        &copy; Sistem Informasi 2023
+    <p>https://dpmd.pamekasankab.go.id/</p>
     </footer>
 </body>
 </html>

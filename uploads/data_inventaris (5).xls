@@ -1,0 +1,98 @@
+<table border='1'><tr>
+                        <th>No</th>
+                        <th>No. Surat</th>
+                        <th>Perihal</th>
+                        <th>Tanggal Surat</th>
+                        <th>Diterima Tanggal</th>
+                        <th>Instansi Pengirim</th>
+                        <th>Sifat</th>
+                        <th>Dokumen</th>
+    </tr><br />
+<b>Warning</b>:  Undefined array key "nomer_surat" in <b>C:\xampp\htdocs\PMD\export.php</b> on line <b>33</b><br />
+<tr>
+                <td>1</td>
+                <td></td>
+                <td>pengajuan</td>
+                <td>2025-01-10</td>
+                <td>2025-01-10</td>
+                <td>camat</td>
+                <td>Biasa</td>
+                <td>22-028_Andre_PAW C.pdf</td>
+            </tr><br />
+<b>Warning</b>:  Undefined array key "nomer_surat" in <b>C:\xampp\htdocs\PMD\export.php</b> on line <b>33</b><br />
+<tr>
+                <td>2</td>
+                <td></td>
+                <td>pemberitahuan</td>
+                <td>2025-01-08</td>
+                <td>2025-01-10</td>
+                <td>camat</td>
+                <td>Penting</td>
+                <td></td>
+            </tr><br />
+<b>Warning</b>:  Undefined array key "nomer_surat" in <b>C:\xampp\htdocs\PMD\export.php</b> on line <b>33</b><br />
+<tr>
+                <td>3</td>
+                <td></td>
+                <td>pengajuan</td>
+                <td>2025-01-09</td>
+                <td>2025-01-10</td>
+                <td>camat</td>
+                <td>Rahasia</td>
+                <td></td>
+            </tr><br />
+<b>Warning</b>:  Undefined array key "nomer_surat" in <b>C:\xampp\htdocs\PMD\export.php</b> on line <b>33</b><br />
+<tr>
+                <td>4</td>
+                <td></td>
+                <td>pengajuan</td>
+                <td>2025-01-14</td>
+                <td>2025-01-16</td>
+                <td>camat</td>
+                <td>Penting</td>
+                <td></td>
+            </tr><br />
+<b>Warning</b>:  Undefined array key "nomer_surat" in <b>C:\xampp\htdocs\PMD\export.php</b> on line <b>33</b><br />
+<tr>
+                <td>5</td>
+                <td></td>
+                <td>pertemuan</td>
+                <td>2025-01-12</td>
+                <td>2025-01-13</td>
+                <td>bupati</td>
+                <td>Penting</td>
+                <td></td>
+            </tr><br />
+<b>Warning</b>:  Undefined array key "nomer_surat" in <b>C:\xampp\htdocs\PMD\export.php</b> on line <b>33</b><br />
+<tr>
+                <td>6</td>
+                <td></td>
+                <td>pengajuan</td>
+                <td>2025-01-14</td>
+                <td>2025-01-15</td>
+                <td>camat</td>
+                <td>Penting</td>
+                <td></td>
+            </tr><br />
+<b>Warning</b>:  Undefined array key "nomer_surat" in <b>C:\xampp\htdocs\PMD\export.php</b> on line <b>33</b><br />
+<tr>
+                <td>7</td>
+                <td></td>
+                <td>pertemuan</td>
+                <td>2025-01-17</td>
+                <td>2025-01-17</td>
+                <td>bupati</td>
+                <td>Penting</td>
+                <td></td>
+            </tr><br />
+<b>Warning</b>:  Undefined array key "nomer_surat" in <b>C:\xampp\htdocs\PMD\export.php</b> on line <b>33</b><br />
+<tr>
+                <td>8</td>
+                <td></td>
+                <td>pertemuan</td>
+                <td>2025-01-09</td>
+                <td>2025-01-16</td>
+                <td>bupati</td>
+                <td>Rahasia</td>
+                <td></td>
+            </tr></table>
