@@ -240,7 +240,7 @@ $result = $stmt->get_result();
     </div>
 
     <footer>
-        &copy; Sistem Informasi 2023
+    <p>https://dpmd.pamekasankab.go.id/</p>
     </footer>
 
     <!-- Tambahkan JavaScript untuk mengelola notifikasi -->
