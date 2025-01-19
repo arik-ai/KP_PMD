@@ -199,7 +199,7 @@ $result = $stmt->get_result();
                                 <td>
                                     <a href="upload.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-primary">Upload</a>
                                     <a href="cetak.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-secondary">Cetak</a>
-                                    <a href="edit_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-warning">Edit</a>
+                                    <a href="edit_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-warning">Edit</a>
                                     <a href="surat_keluar.php?hapus_id=<?= $row['id_surat_keluar']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
                                 </td>
                             </tr>
