@@ -1,0 +1,82 @@
+<table border='1'><tr>
+                        <th>No</th>
+                        <th>No. Surat</th>
+                        <th>Perihal</th>
+                        <th>Tanggal Surat</th>
+                        <th>Diterima Tanggal</th>
+                        <th>Instansi Pengirim</th>
+                        <th>Sifat</th>
+                        <th>Dokumen</th>
+    </tr><tr>
+                <td>1</td>
+                <td>003/hma/2025</td>
+                <td>pengajuan</td>
+                <td>2025-01-10</td>
+                <td>2025-01-10</td>
+                <td>camat</td>
+                <td>Biasa</td>
+                <td><a href='dokumen/22-028_Andre_PAW C.pdf' target='_blank
+            </tr><tr>
+                <td>2</td>
+                <td>004/hma/2025</td>
+                <td>pemberitahuan</td>
+                <td>2025-01-08</td>
+                <td>2025-01-10</td>
+                <td>camat</td>
+                <td>Penting</td>
+                <td><a href='dokumen/' target='_blank
+            </tr><tr>
+                <td>3</td>
+                <td>002/hma/2025</td>
+                <td>pengajuan</td>
+                <td>2025-01-09</td>
+                <td>2025-01-10</td>
+                <td>camat</td>
+                <td>Rahasia</td>
+                <td><a href='dokumen/' target='_blank
+            </tr><tr>
+                <td>4</td>
+                <td>005/hma/2025</td>
+                <td>pengajuan</td>
+                <td>2025-01-14</td>
+                <td>2025-01-16</td>
+                <td>camat</td>
+                <td>Penting</td>
+                <td><a href='dokumen/' target='_blank
+            </tr><tr>
+                <td>5</td>
+                <td>006/hma/2025</td>
+                <td>pertemuan</td>
+                <td>2025-01-12</td>
+                <td>2025-01-13</td>
+                <td>bupati</td>
+                <td>Penting</td>
+                <td><a href='dokumen/' target='_blank
+            </tr><tr>
+                <td>6</td>
+                <td>006/hma/2025</td>
+                <td>pengajuan</td>
+                <td>2025-01-14</td>
+                <td>2025-01-15</td>
+                <td>camat</td>
+                <td>Penting</td>
+                <td><a href='dokumen/' target='_blank
+            </tr><tr>
+                <td>7</td>
+                <td>009/hma/2025</td>
+                <td>pertemuan</td>
+                <td>2025-01-17</td>
+                <td>2025-01-17</td>
+                <td>bupati</td>
+                <td>Penting</td>
+                <td><a href='dokumen/' target='_blank
+            </tr><tr>
+                <td>8</td>
+                <td>0099/hma/2025</td>
+                <td>pertemuan</td>
+                <td>2025-01-09</td>
+                <td>2025-01-16</td>
+                <td>bupati</td>
+                <td>Rahasia</td>
+                <td><a href='dokumen/' target='_blank
+            </tr></table>

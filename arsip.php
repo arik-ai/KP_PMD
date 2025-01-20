@@ -137,7 +137,7 @@ $totalKeluar = $resultKeluar->fetch_assoc()['total_keluar'];
 
     <!-- Footer -->
     <footer>
-        &copy; 2023 Sistem Informasi Administrasi Desa
+        <p>https://dpmd.pamekasankab.go.id/</p>
     </footer>
 </body>
 </html>

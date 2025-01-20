@@ -3,7 +3,6 @@ session_start();
 
 // Periksa apakah pengguna sudah login
 if (!isset($_SESSION['username'])) {
-    // Jika belum login, arahkan ke halaman login
     header("Location: login.php");
     exit;
 }
@@ -13,13 +12,10 @@ include 'db.php';
 
 // Cek apakah parameter ID ada di URL
 if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-
-    // Ambil data surat keluar berdasarkan ID
+    $id = intval($_GET['id']); // Pastikan ID aman
     $query = "SELECT * FROM surat_keluar WHERE id_surat_keluar = $id";
     $result = mysqli_query($conn, $query);
 
-    // Jika data ditemukan
     if (mysqli_num_rows($result) > 0) {
         $data = mysqli_fetch_assoc($result);
     } else {
@@ -30,13 +26,32 @@ if (isset($_GET['id'])) {
 
 // Proses update data jika form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ambil data dari form
-    $id_surat_keluar = $_POST['id_surat_keluar'];
+    $id_surat_keluar = intval($_POST['id_surat_keluar']);
     $no_surat = mysqli_real_escape_string($conn, $_POST['no_surat']);
     $perihal_surat = mysqli_real_escape_string($conn, $_POST['perihal_surat']);
     $tanggal_surat = mysqli_real_escape_string($conn, $_POST['tanggal_surat']);
     $penerima = mysqli_real_escape_string($conn, $_POST['penerima']);
     $sifat_surat = mysqli_real_escape_string($conn, $_POST['sifat_surat']);
+    $dokumen = $data['dokumen_surat']; // Default dokumen lama
+
+    // Proses upload file jika ada file baru
+    if (!empty($_FILES['dokumen_surat']['name'])) {
+        $file_surat = $_FILES['dokumen_surat']['name'];
+        $tmp_name = $_FILES['dokumen_surat']['tmp_name'];
+        $upload_dir = 'uploads/';
+        $file_path = $upload_dir . basename($file_surat);
+
+        if (move_uploaded_file($tmp_name, $file_path)) {
+            // Hapus file lama jika ada
+            if (!empty($dokumen) && file_exists($upload_dir . $dokumen)) {
+                unlink($upload_dir . $dokumen);
+            }
+            $dokumen = basename($file_surat); // Tetap gunakan nama asli file
+        } else {
+            echo "<script>alert('Gagal mengupload file!'); window.history.back();</script>";
+            exit;
+        }
+    }
 
     // Query untuk update data
     $query = "UPDATE surat_keluar SET 
@@ -44,10 +59,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         perihal_surat = '$perihal_surat', 
         tanggal_surat = '$tanggal_surat', 
         penerima = '$penerima', 
-        sifat_surat = '$sifat_surat' 
+        sifat_surat = '$sifat_surat', 
+        dokumen_surat = '$dokumen' 
         WHERE id_surat_keluar = $id_surat_keluar";
 
-    // Eksekusi query
     if (mysqli_query($conn, $query)) {
         echo "<script>alert('Data berhasil diperbarui!'); window.location.href='surat_keluar.php';</script>";
     } else {
@@ -93,7 +108,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!-- Form Edit Surat Keluar -->
         <div class="container">
             <h2>Edit Surat Keluar</h2>
-            <form action="" method="post" class="form-container">
+            <form action="" method="post" class="form-container" enctype="multipart/form-data">
                 <input type="hidden" name="id_surat_keluar" value="<?= htmlspecialchars($data['id_surat_keluar']); ?>">
                 <div class="form-row">
                     <div class="form-group">
@@ -124,6 +139,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <option value="Rahasia" <?= $data['sifat_surat'] == 'Rahasia' ? 'selected' : ''; ?>>Rahasia</option>
                             <option value="Biasa" <?= $data['sifat_surat'] == 'Biasa' ? 'selected' : ''; ?>>Biasa</option>
                         </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="dokumen_surat">Ubah File Surat (Opsional)</label>
+                        <input type="file" id="dokumen_surat" name="dokumen_surat">
+                        <p>File saat ini: <strong><?= htmlspecialchars($data['dokumen_surat']); ?></strong></p>
                     </div>
                 </div>
                 <div class="form-row">

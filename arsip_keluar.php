@@ -8,10 +8,6 @@ if (!isset($_SESSION['username'])) {
 }
 
 include 'db.php';
-
-// Tangkap notifikasi nomor surat baru
-$newSuratNo = isset($_GET['new_surat_no']) ? $_GET['new_surat_no'] : '';
-
 // Konfigurasi pagination
 $perPage = 10;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -19,21 +15,6 @@ $offset = ($currentPage - 1) * $perPage;
 
 // Pencarian
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
-
-// Proses penghapusan surat
-if (isset($_GET['hapus_id'])) {
-    $hapusId = intval($_GET['hapus_id']); // Sanitasi input
-    $deleteQuery = "DELETE FROM surat_keluar WHERE id_surat_keluar = ?";
-    $stmtDelete = $conn->prepare($deleteQuery);
-    $stmtDelete->bind_param("i", $hapusId);
-
-    if ($stmtDelete->execute()) {
-        header("Location: surat_keluar.php?message=deleted");
-        exit;
-    } else {
-        echo "Gagal menghapus data.";
-    }
-}
 
 // Hitung total data
 $totalQuery = "SELECT COUNT(*) AS total FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ?";
@@ -52,7 +33,6 @@ $stmt->bind_param("ssssii", $searchWildcard, $searchWildcard, $searchWildcard, $
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -139,8 +119,8 @@ $result = $stmt->get_result();
         <ul class="sidebar-menu">
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" ><span class="icon">📂</span> Data Surat Masuk</a></li>
-            <li><a href="surat_keluar.php" class="active"><span class="icon">📤</span> Data Surat Keluar</a></li>
-            <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
+            <li><a href="surat_keluar.php" ><span class="icon">📤</span> Data Surat Keluar</a></li>
+            <li><a href="arsip.php" class="active"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
         </ul>
@@ -157,23 +137,13 @@ $result = $stmt->get_result();
         </div>
         <div class="container">
             <h2>Daftar Surat Keluar</h2>
-
-            <!-- Tampilkan notifikasi jika ada -->
-            <?php if (!empty($newSuratNo)): ?>
-                <div class="notification" id="notification">
-                    Surat berhasil ditambah dengan No. Surat: <?= htmlspecialchars($newSuratNo); ?>
-                    <button id="close-notification">Oke</button>
-                </div>
-            <?php endif; ?>
-
             <!-- Form pencarian -->
             <div class="search-bar">
-                <form action="surat_keluar.php" method="GET">
+                <form action="arsip_keluar.php" method="GET">
                     <input type="text" name="search" placeholder="Pencarian" value="<?= htmlspecialchars($searchQuery); ?>" />
                     <button class="btn btn-primary" type="submit">Search</button>
                 </form>
             </div>
-            <a href="tambah_surat_keluar.php" class="btn btn-primary">Tambah Surat +</a>
             <table class="table">
                 <thead>
                     <tr>
@@ -183,7 +153,7 @@ $result = $stmt->get_result();
                         <th>Tanggal Surat</th>
                         <th>Penerima</th>
                         <th>Sifat</th>
-                        <th>Aksi</th>
+                        <th>Dokumen</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -196,23 +166,15 @@ $result = $stmt->get_result();
                                 <td><?= htmlspecialchars($row['tanggal_surat']); ?></td>
                                 <td><?= htmlspecialchars($row['penerima']); ?></td>
                                 <td><?= htmlspecialchars($row['sifat_surat']); ?></td>
-                                <td>
-                                    <a href="upload.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-primary">Upload</a>
-                                    <a href="cetak_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-secondary">Cetak</a>
-                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                                    <a href="edit_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-warning">Edit</a>
-                                    <?php endif; ?>
-                                    <a href="surat_keluar.php?hapus_id=<?= $row['id_surat_keluar']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
-                                </td>
+                                <td><?= htmlspecialchars($row['dokumen_surat']); ?></td>
                             </tr>
                         <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="7" class="no-data">Tidak ada data.</td>
-                        </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
+            <div class="export-buttons">
+                <a href="export_arsip_keluar.php" class="btn btn-success">Export ke Excel</a>
+            </div>
 
             <!-- Pagination -->
             <ul class="pagination">

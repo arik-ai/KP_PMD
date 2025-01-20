@@ -106,7 +106,7 @@ if (!isset($_SESSION['username'])) {
         }
         footer {
             margin-top: 240px;
-            margin-left: 10px;
+            margin-left: 0px;
             font-size: 14px;
             color: #555;
         }
@@ -115,8 +115,10 @@ if (!isset($_SESSION['username'])) {
 <body>
     <div class="sidebar">
         <img src="logo.png" alt="Administrasi" class="img-fluid">
-        <a href="index.php" class="active" onclick="showContent('dashboard')">Dashboard</a>
-        <a href="logout.php" onclick="logout()">Logout</a>
+        <ul class="sidebar-menu">
+            <li><a href="index.php" class="active"><span class="icon">🏠</span> Dashboard</a></li>
+            <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
+        </ul>
     </div>
     <div class="main-content">
         <!-- Topbar -->

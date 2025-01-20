@@ -35,21 +35,19 @@ if ($existingFile) {
             $fileTmpPath = $_FILES['file_surat']['tmp_name'];
             $fileName = $_FILES['file_surat']['name'];
 
-            $newFileName = $fileName; // Gunakan nama asli file yang diunggah
-
             // Tentukan folder tujuan penyimpanan
             $uploadFileDir = 'uploads/';
             if (!is_dir($uploadFileDir)) {
                 mkdir($uploadFileDir, 0777, true);
             }
 
-            $destPath = $uploadFileDir . $newFileName;
+            $destPath = $uploadFileDir . $fileName;
 
             if (move_uploaded_file($fileTmpPath, $destPath)) {
-                // Simpan informasi file ke database
+                // Simpan nama file saja ke database
                 $query = "UPDATE surat_keluar SET dokumen_surat = ? WHERE id_surat_keluar = ?";
                 $stmt = $conn->prepare($query);
-                $stmt->bind_param("si", $destPath, $idSuratKeluar);
+                $stmt->bind_param("si", $fileName, $idSuratKeluar);
 
                 if ($stmt->execute()) {
                     header("Location: surat_keluar.php?message=upload_success");
@@ -76,8 +74,8 @@ if ($existingFile) {
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-        <!-- Sidebar -->
-        <div class="sidebar">
+    <!-- Sidebar -->
+    <div class="sidebar">
         <div class="logo">
             <img src="logo.png" alt="Logo" />
         </div>
@@ -101,23 +99,24 @@ if ($existingFile) {
                 <div class="profile-icon">👤</div>
             </div>
         </div>
-    <div class="container">
-        <h2>Upload File Surat</h2>
-        <?php if (isset($errorMsg)): ?>
-            <div class="error-message">
-                <?= htmlspecialchars($errorMsg); ?>
-                <a href="surat_keluar.php" class="btn btn-secondary">Kembali</a>
-            </div>
-        <?php else: ?>
-            <form action="upload.php?id=<?= htmlspecialchars($idSuratKeluar); ?>" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="file_surat">Pilih File:</label>
-                    <input type="file" name="file_surat" id="file_surat" required>
+        <div class="container">
+            <h2>Upload File Surat</h2>
+            <?php if (isset($errorMsg)): ?>
+                <div class="error-message">
+                    <?= htmlspecialchars($errorMsg); ?>
+                    <a href="surat_keluar.php" class="btn btn-secondary">Kembali</a>
                 </div>
-                <button type="submit" class="btn btn-primary">Upload</button>
-                <a href="surat_keluar.php" class="btn btn-secondary">Kembali</a>
-            </form>
-        <?php endif; ?>
+            <?php else: ?>
+                <form action="upload.php?id=<?= htmlspecialchars($idSuratKeluar); ?>" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="file_surat">Pilih File:</label>
+                        <input type="file" name="file_surat" id="file_surat" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <a href="surat_keluar.php" class="btn btn-secondary">Kembali</a>
+                </form>
+            <?php endif; ?>
+        </div>
     </div>
 </body>
 </html>

@@ -102,13 +102,21 @@ $result = $dataStmt->get_result();
             pointer-events: none;
                 }
         /* Filter Lokasi dan Pencarian */
-            .search-bar,
+            .search-bar{
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 10px;
+                padding: 5px 10px;
+            }
             .filter-lokasi {
                 display: flex;
                 align-items: center;
                 gap: 10px;
-                margin-bottom: 20px;
-                padding: 5px 15px;
+                margin-bottom: 10px;
+                padding: 5px 5px;
+                margin-right: 1000px;
+                margin-left: 5px;
             }
 
             .search-bar input,
@@ -120,7 +128,18 @@ $result = $dataStmt->get_result();
                 border-radius: 4px;
             }
 
-            .search-bar button,
+            .search-bar button{
+                padding: 10px 18px;
+                font-size: 14px;
+                color: white;
+                background-color: #0078d4;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+                margin-top: 0px;
+            }
+
             .filter-lokasi button {
                 padding: 10px 15px;
                 font-size: 14px;
@@ -130,6 +149,8 @@ $result = $dataStmt->get_result();
                 border-radius: 4px;
                 cursor: pointer;
                 transition: background-color 0.3s ease, transform 0.2s ease;
+                margin-top: 0px;
+                margin-left: 0px;
             }
 
             .search-bar button:hover,
@@ -266,7 +287,7 @@ $result = $dataStmt->get_result();
             </form>
 
             <div class="export-buttons">
-                <a href="export_excel.php" class="btn btn-success">Export ke Excel</a>
+                <a href="export_excel.php?search=<?= urlencode($searchQuery); ?>&lokasi_barang=<?= urlencode($lokasiBarang); ?>" class="btn btn-success">Export ke Excel</a>
             </div>
         </div>
     </div>

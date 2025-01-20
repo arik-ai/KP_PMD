@@ -9,34 +9,32 @@ if (!isset($_SESSION['username'])) {
 
 include 'db.php';
 
-// Tangkap notifikasi nomor surat baru
-$newSuratNo = isset($_GET['new_surat_no']) ? $_GET['new_surat_no'] : '';
+// Proses hapus data jika ada parameter `id`
+if (isset($_GET['id'])) {
+    $id = (int) $_GET['id']; // Pastikan ID adalah angka untuk keamanan
 
-// Konfigurasi pagination
-$perPage = 10;
-$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($currentPage - 1) * $perPage;
+    // Query hapus data
+    $sql = "DELETE FROM surat_masuk WHERE id_surat = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id);
 
-// Pencarian
-$searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
-
-// Proses penghapusan surat
-if (isset($_GET['hapus_id'])) {
-    $hapusId = intval($_GET['hapus_id']); // Sanitasi input
-    $deleteQuery = "DELETE FROM surat_keluar WHERE id_surat_keluar = ?";
-    $stmtDelete = $conn->prepare($deleteQuery);
-    $stmtDelete->bind_param("i", $hapusId);
-
-    if ($stmtDelete->execute()) {
-        header("Location: surat_keluar.php?message=deleted");
-        exit;
+    if ($stmt->execute()) {
+        echo "<script>alert('Data berhasil dihapus!'); window.location.href='surat_masuk.php';</script>";
     } else {
-        echo "Gagal menghapus data.";
+        echo "Error: " . $conn->error;
     }
 }
 
+// Konfigurasi pagination
+$perPage = 10; // Jumlah data per halaman
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($currentPage - 1) * $perPage;
+
+// Mendapatkan nilai pencarian dari URL jika ada
+$searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
+
 // Hitung total data
-$totalQuery = "SELECT COUNT(*) AS total FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ?";
+$totalQuery = "SELECT COUNT(*) AS total FROM surat_masuk WHERE nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR sifat LIKE ?";
 $stmtTotal = $conn->prepare($totalQuery);
 $searchWildcard = "%$searchQuery%";
 $stmtTotal->bind_param("ssss", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard);
@@ -46,7 +44,7 @@ $totalData = $resultTotal->fetch_assoc()['total'];
 $totalPages = ceil($totalData / $perPage);
 
 // Query data dengan limit dan offset
-$sql = "SELECT * FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ? LIMIT ? OFFSET ?";
+$sql = "SELECT * FROM surat_masuk WHERE nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR sifat LIKE ? LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssssii", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard, $perPage, $offset);
 $stmt->execute();
@@ -58,36 +56,10 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Surat Keluar</title>
+    <title>Daftar Surat Masuk</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .notification {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .notification button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-
-        .notification button:hover {
-            background-color: #218838;
-        }
-
+        /* Gaya Pagination */
         .pagination {
             display: flex;
             justify-content: center;
@@ -129,9 +101,15 @@ $result = $stmt->get_result();
             border-radius: 5px;
             cursor: default;
         }
+
+        .pagination .disabled {
+            pointer-events: none;
+        }
     </style>
+
 </head>
 <body>
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
             <img src="logo.png" alt="Logo" />
@@ -139,8 +117,8 @@ $result = $stmt->get_result();
         <ul class="sidebar-menu">
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" ><span class="icon">📂</span> Data Surat Masuk</a></li>
-            <li><a href="surat_keluar.php" class="active"><span class="icon">📤</span> Data Surat Keluar</a></li>
-            <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
+            <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
+            <li><a href="arsip.php" class="active"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
         </ul>
@@ -148,6 +126,7 @@ $result = $stmt->get_result();
 
     <!-- Main Content -->
     <div class="main-content">
+        <!-- Topbar -->
         <div class="topbar">
             <h2>Administrasi</h2>
             <div class="profile">
@@ -155,25 +134,16 @@ $result = $stmt->get_result();
                 <div class="profile-icon">👤</div>
             </div>
         </div>
+
+        <!-- Table Content -->
         <div class="container">
-            <h2>Daftar Surat Keluar</h2>
-
-            <!-- Tampilkan notifikasi jika ada -->
-            <?php if (!empty($newSuratNo)): ?>
-                <div class="notification" id="notification">
-                    Surat berhasil ditambah dengan No. Surat: <?= htmlspecialchars($newSuratNo); ?>
-                    <button id="close-notification">Oke</button>
-                </div>
-            <?php endif; ?>
-
-            <!-- Form pencarian -->
+            <h2>Arsip Surat Masuk</h2>
             <div class="search-bar">
-                <form action="surat_keluar.php" method="GET">
+                <form action="arsip_masuk.php" method="GET">
                     <input type="text" name="search" placeholder="Pencarian" value="<?= htmlspecialchars($searchQuery); ?>" />
                     <button class="btn btn-primary" type="submit">Search</button>
                 </form>
             </div>
-            <a href="tambah_surat_keluar.php" class="btn btn-primary">Tambah Surat +</a>
             <table class="table">
                 <thead>
                     <tr>
@@ -181,9 +151,10 @@ $result = $stmt->get_result();
                         <th>No. Surat</th>
                         <th>Perihal</th>
                         <th>Tanggal Surat</th>
-                        <th>Penerima</th>
+                        <th>Diterima Tanggal</th>
+                        <th>Instansi Pengirim</th>
                         <th>Sifat</th>
-                        <th>Aksi</th>
+                        <th>Dokumen</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -191,29 +162,25 @@ $result = $stmt->get_result();
                         <?php $no = $offset + 1; while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td><?= $no++; ?></td>
-                                <td><?= htmlspecialchars($row['no_surat']); ?></td>
-                                <td><?= htmlspecialchars($row['perihal_surat']); ?></td>
-                                <td><?= htmlspecialchars($row['tanggal_surat']); ?></td>
-                                <td><?= htmlspecialchars($row['penerima']); ?></td>
-                                <td><?= htmlspecialchars($row['sifat_surat']); ?></td>
-                                <td>
-                                    <a href="upload.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-primary">Upload</a>
-                                    <a href="cetak_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-secondary">Cetak</a>
-                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                                    <a href="edit_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-warning">Edit</a>
-                                    <?php endif; ?>
-                                    <a href="surat_keluar.php?hapus_id=<?= $row['id_surat_keluar']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
-                                </td>
+                                <td><?= htmlspecialchars($row['nomor_surat']); ?></td>
+                                <td><?= htmlspecialchars($row['perihal']); ?></td>
+                                <td><?= htmlspecialchars($row['tgl_surat']); ?></td>
+                                <td><?= htmlspecialchars($row['terima_tanggal']); ?></td>
+                                <td><?= htmlspecialchars($row['pengirim']); ?></td>
+                                <td><?= htmlspecialchars($row['sifat']); ?></td>
+                                <td><?= htmlspecialchars($row['dokumen']); ?> </td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="7" class="no-data">Tidak ada data.</td>
+                            <td colspan="8" class="no-data">Tidak ada data.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
-
+            <div class="export-buttons">
+                <a href="export_arsip_masuk.php" class="btn btn-success">Export ke Excel</a>
+            </div>
             <!-- Pagination -->
             <ul class="pagination">
                 <?php if ($currentPage > 1): ?>
@@ -236,9 +203,11 @@ $result = $stmt->get_result();
                     <li class="disabled"><span>Next &raquo;</span></li>
                 <?php endif; ?>
             </ul>
+
         </div>
     </div>
 
+    <!-- Footer -->
     <footer>
     <p>https://dpmd.pamekasankab.go.id/</p>
     </footer>
