@@ -8,28 +8,61 @@ if (!isset($_SESSION['username'])) {
 }
 
 include 'db.php';
+
 // Konfigurasi pagination
 $perPage = 10;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($currentPage - 1) * $perPage;
 
-// Pencarian
+// Pencarian dan filter
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
+$filterYear = isset($_GET['year']) ? (int)$_GET['year'] : '';
+$filterMonth = isset($_GET['month']) ? (int)$_GET['month'] : '';
+
+// Menyiapkan kondisi tambahan untuk filter tahun dan bulan
+$conditions = "1"; // Default kondisi (menampilkan semua data)
+$params = [];
+$paramTypes = "";
+
+if ($searchQuery !== '') {
+    $conditions .= " AND (no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ?)";
+    $searchWildcard = "%$searchQuery%";
+    array_push($params, $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard);
+    $paramTypes .= "ssss";
+}
+
+if ($filterYear) {
+    $conditions .= " AND YEAR(tanggal_surat) = ?";
+    array_push($params, $filterYear);
+    $paramTypes .= "i";
+}
+
+if ($filterMonth) {
+    $conditions .= " AND MONTH(tanggal_surat) = ?";
+    array_push($params, $filterMonth);
+    $paramTypes .= "i";
+}
 
 // Hitung total data
-$totalQuery = "SELECT COUNT(*) AS total FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ?";
+$totalQuery = "SELECT COUNT(*) AS total FROM surat_keluar WHERE $conditions";
 $stmtTotal = $conn->prepare($totalQuery);
-$searchWildcard = "%$searchQuery%";
-$stmtTotal->bind_param("ssss", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard);
+if (!empty($params)) {
+    $stmtTotal->bind_param($paramTypes, ...$params);
+}
 $stmtTotal->execute();
 $resultTotal = $stmtTotal->get_result();
 $totalData = $resultTotal->fetch_assoc()['total'];
 $totalPages = ceil($totalData / $perPage);
 
 // Query data dengan limit dan offset
-$sql = "SELECT * FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ? LIMIT ? OFFSET ?";
+$sql = "SELECT * FROM surat_keluar WHERE $conditions LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ssssii", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard, $perPage, $offset);
+
+// Gabungkan parameter tambahan untuk LIMIT dan OFFSET
+array_push($params, $perPage, $offset);
+$paramTypes .= "ii";
+
+$stmt->bind_param($paramTypes, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -41,6 +74,63 @@ $result = $stmt->get_result();
     <title>Daftar Surat Keluar</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Gaya untuk filter (input, select, dan button) */
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 250px;
+        }
+
+        .search-bar select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 150px;
+        }
+
+        .search-bar button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Gaya untuk tombol Export */
+        .export-buttons {
+            margin-top: 20px;
+        }
+
+        .export-buttons a {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .export-buttons a:hover {
+            background-color: #218838;
+        }
+
         .notification {
             margin: 20px 0;
             padding: 15px;
@@ -141,7 +231,22 @@ $result = $stmt->get_result();
             <div class="search-bar">
                 <form action="arsip_keluar.php" method="GET">
                     <input type="text" name="search" placeholder="Pencarian" value="<?= htmlspecialchars($searchQuery); ?>" />
-                    <button class="btn btn-primary" type="submit">Search</button>
+                    <button type="submit">Search</button>
+                    <select name="year">
+                        <option value="">Pilih Tahun</option>
+                        <?php for ($year = date('Y'); $year >= 2000; $year--): ?>
+                            <option value="<?= $year; ?>" <?= $filterYear == $year ? 'selected' : ''; ?>><?= $year; ?></option>
+                        <?php endfor; ?>
+                    </select>
+                    <select name="month">
+                        <option value="">Pilih Bulan</option>
+                        <?php
+                        $months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                        foreach ($months as $key => $month): ?>
+                            <option value="<?= $key + 1; ?>" <?= $filterMonth == $key + 1 ? 'selected' : ''; ?>><?= $month; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="submit">Filter</button>
                 </form>
             </div>
             <table class="table">
@@ -173,7 +278,7 @@ $result = $stmt->get_result();
                 </tbody>
             </table>
             <div class="export-buttons">
-                <a href="export_arsip_keluar.php" class="btn btn-success">Export ke Excel</a>
+                <a href="export_arsip_keluar.php?search=<?= urlencode($searchQuery); ?>&year=<?= $filterYear; ?>&month=<?= $filterMonth; ?>" class="btn btn-success">Export ke Excel</a>
             </div>
 
             <!-- Pagination -->
