@@ -143,6 +143,8 @@
 
                 <button type="submit" class="login-button">Login</button>
             </form>
+            <br>
+            <p><a href="register.php" style="text-decoration: none; color: #007bff;">Belum mempunyai Akun? Registrasi Sekarang</a></p>
         </div>
         <div class="image-section"></div>
     </div>

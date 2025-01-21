@@ -72,6 +72,25 @@ if ($existingFile) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unggah File Surat</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Menghilangkan border pada tombol */
+        button {
+            border: none;
+            outline: none; /* Menghilangkan outline jika ada */
+            background-color: #3498db; /* Ubah sesuai warna yang diinginkan */
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px; /* Agar tombol terlihat melengkung */
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9; /* Warna tombol saat hover */
+        }
+
+    </style>
 </head>
 <body>
     <!-- Sidebar -->
