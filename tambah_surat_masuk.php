@@ -7,9 +7,18 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit;
 }
- 
+
 // Koneksi ke database
 include 'db.php';
+
+// Query untuk mengambil data sifat_surat
+$sifat_surat_query = "SELECT id_sifat, nama_sifat_surat FROM sifat_surat";
+$sifat_surat_result = mysqli_query($conn, $sifat_surat_query);
+
+// Periksa jika query gagal
+if (!$sifat_surat_result) {
+    die("Query gagal: " . mysqli_error($conn));
+}
 
 // Proses penyimpanan data ke database jika form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -19,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $perihal = mysqli_real_escape_string($conn, $_POST['perihal']);
     $pengirim = mysqli_real_escape_string($conn, $_POST['pengirim']);
     $terima_tanggal = mysqli_real_escape_string($conn, $_POST['terima_tanggal']);
-    $sifat = mysqli_real_escape_string($conn, $_POST['sifat']);
+    $nama_sifat_surat = mysqli_real_escape_string($conn, $_POST['nama_sifat_surat']);
 
     // Proses upload file
     $file_surat = $_FILES['file_surat']['name'];
@@ -38,8 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $dokumen = basename($file_surat);
 
         // Query untuk menyimpan data ke tabel surat_masuk
-        $query = "INSERT INTO surat_masuk (nomor_surat, tgl_surat, perihal, pengirim, terima_tanggal, sifat, dokumen) 
-                  VALUES ('$nomor_surat', '$tgl_surat', '$perihal', '$pengirim', '$terima_tanggal', '$sifat', '$dokumen')";
+        $query = "INSERT INTO surat_masuk (nomor_surat, tgl_surat, perihal, pengirim, terima_tanggal, nama_sifat_surat, dokumen) 
+                  VALUES ('$nomor_surat', '$tgl_surat', '$perihal', '$pengirim', '$terima_tanggal', '$nama_sifat_surat', '$dokumen')";
 
         // Eksekusi query
         if (mysqli_query($conn, $query)) {
@@ -71,8 +80,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" class="active"><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
+            <li><a href="surat_perjanjian_kontrak.php"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
+            <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
+            <li><a href="data_master.php"><span class="icon">⚙️</span> Data Master</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
         </ul>
     </div>
@@ -118,12 +131,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="date" id="terima_tanggal" name="terima_tanggal" required>
                     </div>
                     <div class="form-group">
-                        <label for="sifat">Sifat</label>
-                        <select id="sifat" name="sifat" required>
-                            <option value="">--Sifat--</option>
-                            <option value="Penting">Penting</option>
-                            <option value="Rahasia">Rahasia</option>
-                            <option value="Biasa">Biasa</option>
+                        <label for="nama_sifat_surat">Sifat</label>
+                        <select id="nama_sifat_surat" name="nama_sifat_surat" required>
+                            <option value="">--Pilih Sifat Surat--</option>
+                            <?php
+                            while ($row = mysqli_fetch_assoc($sifat_surat_result)) {
+                                echo '<option value="' . htmlspecialchars($row['nama_sifat_surat']) . '">' . htmlspecialchars($row['nama_sifat_surat']) . '</option>';
+                            }
+                            ?>
                         </select>
                     </div>
                 </div>

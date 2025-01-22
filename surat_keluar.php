@@ -36,7 +36,7 @@ if (isset($_GET['hapus_id'])) {
 }
 
 // Hitung total data
-$totalQuery = "SELECT COUNT(*) AS total FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ?";
+$totalQuery = "SELECT COUNT(*) AS total FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR nama_sifat_surat LIKE ?";
 $stmtTotal = $conn->prepare($totalQuery);
 $searchWildcard = "%$searchQuery%";
 $stmtTotal->bind_param("ssss", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard);
@@ -46,7 +46,7 @@ $totalData = $resultTotal->fetch_assoc()['total'];
 $totalPages = ceil($totalData / $perPage);
 
 // Query data dengan limit dan offset
-$sql = "SELECT * FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR sifat_surat LIKE ? LIMIT ? OFFSET ?";
+$sql = "SELECT *, dokumen_surat FROM surat_keluar WHERE no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR nama_sifat_surat LIKE ? LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssssii", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard, $perPage, $offset);
 $stmt->execute();
@@ -61,33 +61,6 @@ $result = $stmt->get_result();
     <title>Daftar Surat Keluar</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .notification {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .notification button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-
-        .notification button:hover {
-            background-color: #218838;
-        }
-
         .pagination {
             display: flex;
             justify-content: center;
@@ -129,6 +102,26 @@ $result = $stmt->get_result();
             border-radius: 5px;
             cursor: default;
         }
+        
+        .notification {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .notification button {
+            background-color: transparent;
+            color: white;
+            border: none;
+            font-size: 16px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -140,8 +133,12 @@ $result = $stmt->get_result();
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" ><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php" class="active"><span class="icon">📤</span> Data Surat Keluar</a></li>
+            <li><a href="surat_perjanjian_kontrak.php"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
+            <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
+            <li><a href="data_master.php"><span class="icon">⚙️</span> Data Master</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
         </ul>
     </div>
@@ -195,12 +192,15 @@ $result = $stmt->get_result();
                                 <td><?= htmlspecialchars($row['perihal_surat']); ?></td>
                                 <td><?= htmlspecialchars($row['tanggal_surat']); ?></td>
                                 <td><?= htmlspecialchars($row['penerima']); ?></td>
-                                <td><?= htmlspecialchars($row['sifat_surat']); ?></td>
-                                <td>
-                                    <a href="upload.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-primary">Upload</a>
+                                <td><?= htmlspecialchars($row['nama_sifat_surat']); ?></td>
+                                <td style="text-align: right;">
+                                    <!-- Jika kolom 'file_upload' kosong, tampilkan tombol Upload -->
+                                    <?php if (empty($row['dokumen_surat'])): ?>
+                                        <a href="upload.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-primary">Upload</a>
+                                    <?php endif; ?>
                                     <a href="cetak_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-secondary">Cetak</a>
                                     <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                                    <a href="edit_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-warning">Edit</a>
+                                        <a href="edit_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-warning">Edit</a>
                                     <?php endif; ?>
                                     <a href="surat_keluar.php?hapus_id=<?= $row['id_surat_keluar']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
                                 </td>
@@ -240,7 +240,7 @@ $result = $stmt->get_result();
     </div>
 
     <footer>
-    <p>https://dpmd.pamekasankab.go.id/</p>
+        <p>https://dpmd.pamekasankab.go.id/</p>
     </footer>
 </body>
 </html>

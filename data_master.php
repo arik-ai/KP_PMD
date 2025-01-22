@@ -14,12 +14,28 @@ if (isset($_GET['id'])) {
     $id = (int) $_GET['id']; // Pastikan ID adalah angka untuk keamanan
 
     // Query hapus data
-    $sql = "DELETE FROM surat_masuk WHERE id_surat = ?";
+    $sql = "DELETE FROM sifat_surat WHERE id_sifat = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Data berhasil dihapus!'); window.location.href='surat_masuk.php';</script>";
+        echo "<script>alert('Data berhasil dihapus!'); window.location.href='data_master.php';</script>";
+    } else {
+        echo "Error: " . $conn->error;
+    }
+}
+
+// Proses tambah data
+if (isset($_POST['add_sifat_surat'])) {
+    $nama_sifat_surat = $_POST['nama_sifat_surat'];
+
+    // Query untuk menambahkan data
+    $sql = "INSERT INTO sifat_surat (nama_sifat_surat) VALUES (?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $nama_sifat_surat);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Sifat Surat berhasil ditambahkan!'); window.location.href='data_master.php';</script>";
     } else {
         echo "Error: " . $conn->error;
     }
@@ -34,19 +50,19 @@ $offset = ($currentPage - 1) * $perPage;
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 
 // Hitung total data
-$totalQuery = "SELECT COUNT(*) AS total FROM surat_masuk WHERE nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR nama_sifat_surat LIKE ?";
+$totalQuery = "SELECT COUNT(*) AS total FROM sifat_surat WHERE nama_sifat_surat LIKE ?";
 $stmtTotal = $conn->prepare($totalQuery);
 $searchWildcard = "%$searchQuery%";
-$stmtTotal->bind_param("ssss", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard);
+$stmtTotal->bind_param("s", $searchWildcard);
 $stmtTotal->execute();
 $resultTotal = $stmtTotal->get_result();
 $totalData = $resultTotal->fetch_assoc()['total'];
 $totalPages = ceil($totalData / $perPage);
 
 // Query data dengan limit dan offset
-$sql = "SELECT * FROM surat_masuk WHERE nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR nama_sifat_surat LIKE ? LIMIT ? OFFSET ?";
+$sql = "SELECT * FROM sifat_surat WHERE nama_sifat_surat LIKE ? LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ssssii", $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard, $perPage, $offset);
+$stmt->bind_param("sii", $searchWildcard, $perPage, $offset);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -56,7 +72,7 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Surat Masuk</title>
+    <title>Data Master - Sifat Surat</title>
     <link rel="stylesheet" href="style.css">
     <style>
         /* Gaya Pagination */
@@ -105,8 +121,38 @@ $result = $stmt->get_result();
         .pagination .disabled {
             pointer-events: none;
         }
-    </style>
 
+        /* Styling Form */
+        .form-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container input[type="text"] {
+            width: 40%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
 </head>
 <body>
     <!-- Sidebar -->
@@ -116,14 +162,14 @@ $result = $stmt->get_result();
         </div>
         <ul class="sidebar-menu">
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
-            <li><a href="surat_masuk.php" class="active"><span class="icon">📂</span> Data Surat Masuk</a></li>
+            <li><a href="surat_masuk.php"><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
             <li><a href="surat_perjanjian_kontrak.php"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
             <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
             <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
-            <li><a href="data_master.php"><span class="icon">⚙️</span> Data Master</a></li>
+            <li><a href="data_master.php" class="active"><span class="icon">⚙️</span> Data Master</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
         </ul>
     </div>
@@ -139,26 +185,22 @@ $result = $stmt->get_result();
             </div>
         </div>
 
-        <!-- Table Content -->
+        <!-- Add Sifat Surat Form -->
         <div class="container">
-            <h2>Daftar Surat Masuk</h2>
-            <div class="search-bar">
-                <form action="surat_masuk.php" method="GET">
-                    <input type="text" name="search" placeholder="Pencarian" value="<?= htmlspecialchars($searchQuery); ?>" />
-                    <button class="btn btn-primary" type="submit">Search</button>
+            <div class="form-container">
+            <!-- Table Content -->
+            <h2>Data Master - Sifat Surat</h2>
+            <br>
+            <h3>Tambah Sifat Surat</h3>
+                <form action="data_master.php" method="POST">
+                    <input type="text" name="nama_sifat_surat" placeholder="Masukkan Nama Sifat Surat" required>
+                    <button type="submit" name="add_sifat_surat">Tambah</button>
                 </form>
-            </div>
-            <a href="tambah_surat_masuk.php" class="btn btn-primary">Tambah Surat +</a>
             <table class="table">
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>No. Surat</th>
-                        <th>Perihal</th>
-                        <th>Tanggal Surat</th>
-                        <th>Diterima Tanggal</th>
-                        <th>Instansi Pengirim</th>
-                        <th>sifat</th>
+                        <th>Nama Sifat Surat</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -167,24 +209,16 @@ $result = $stmt->get_result();
                         <?php $no = $offset + 1; while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td><?= $no++; ?></td>
-                                <td><?= htmlspecialchars($row['nomor_surat']); ?></td>
-                                <td><?= htmlspecialchars($row['perihal']); ?></td>
-                                <td><?= htmlspecialchars($row['tgl_surat']); ?></td>
-                                <td><?= htmlspecialchars($row['terima_tanggal']); ?></td>
-                                <td><?= htmlspecialchars($row['pengirim']); ?></td>
                                 <td><?= htmlspecialchars($row['nama_sifat_surat']); ?></td>
                                 <td>
-                                    <a href="cetak.php?id=<?= $row['id_surat']; ?>" class="btn btn-secondary">Cetak</a>
-                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                                        <a href="edit.php?id=<?= $row['id_surat']; ?>" class="btn btn-warning">Edit</a>
-                                    <?php endif; ?>
-                                    <a href="?id=<?= $row['id_surat']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
+                                    <a href="edit_sifat_surat.php?id=<?= $row['id_sifat']; ?>" class="btn btn-warning">Edit</a>
+                                    <a href="?id=<?= $row['id_sifat']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="8" class="no-data">Tidak ada data.</td>
+                            <td colspan="3" class="no-data">Tidak ada data.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -212,10 +246,8 @@ $result = $stmt->get_result();
                     <li class="disabled"><span>Next &raquo;</span></li>
                 <?php endif; ?>
             </ul>
-
         </div>
     </div>
-
     <!-- Footer -->
     <footer>
     <p>https://dpmd.pamekasankab.go.id/</p>

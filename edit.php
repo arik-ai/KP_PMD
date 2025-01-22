@@ -28,6 +28,10 @@ if (isset($_GET['id'])) {
     }
 }
 
+// Ambil data sifat surat dari tabel sifat_surat
+$query_sifat = "SELECT * FROM sifat_surat";
+$result_sifat = mysqli_query($conn, $query_sifat);
+
 // Proses update data jika form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ambil data dari form
@@ -37,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $perihal = mysqli_real_escape_string($conn, $_POST['perihal']);
     $pengirim = mysqli_real_escape_string($conn, $_POST['pengirim']);
     $terima_tanggal = mysqli_real_escape_string($conn, $_POST['terima_tanggal']);
-    $sifat = mysqli_real_escape_string($conn, $_POST['sifat']);
+    $nama_sifat_surat = mysqli_real_escape_string($conn, $_POST['sifat']); // Sesuaikan dengan nama field
 
     // Proses upload file jika ada file yang diunggah
     $dokumen = $data['dokumen']; // Default dokumen adalah dokumen lama
@@ -63,9 +67,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         perihal = '$perihal', 
         pengirim = '$pengirim', 
         terima_tanggal = '$terima_tanggal', 
-        sifat = '$sifat', 
+        nama_sifat_surat = '$nama_sifat_surat', 
         dokumen = '$dokumen' 
-        WHERE id_surat = $id_surat";
+        WHERE id_surat = $id_surat"; // Pastikan nama kolom benar di database
+
 
     // Eksekusi query
     if (mysqli_query($conn, $query)) {
@@ -94,6 +99,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" class="active"><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
+            <li><a href="surat_perjanjian_kontrak.php"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
+            <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
@@ -143,10 +151,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="form-group">
                         <label for="sifat">Sifat</label>
                         <select id="sifat" name="sifat" required>
-                            <option value="">--Sifat--</option>
-                            <option value="Penting" <?= $data['sifat'] == 'Penting' ? 'selected' : ''; ?>>Penting</option>
-                            <option value="Rahasia" <?= $data['sifat'] == 'Rahasia' ? 'selected' : ''; ?>>Rahasia</option>
-                            <option value="Biasa" <?= $data['sifat'] == 'Biasa' ? 'selected' : ''; ?>>Biasa</option>
+                            <option value="">--Pilih Sifat Surat--</option>
+                            <?php while ($row = mysqli_fetch_assoc($result_sifat)): ?>
+                                <option value="<?= $row['nama_sifat_surat']; ?>" <?= $data['nama_sifat_surat'] == $row['nama_sifat_surat'] ? 'selected' : ''; ?>>
+                                    <?= $row['nama_sifat_surat']; ?>
+                                </option>
+                            <?php endwhile; ?>
                         </select>
                     </div>
                 </div>
@@ -158,12 +168,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
                 <div class="form-row">
-                <div class="form-row">
                     <button type="submit" class="btn btn-primary btn-equal">Simpan Perubahan</button>
                     <a href="surat_masuk.php" class="btn btn-secondary btn-equal">Batal</a>
                 </div>
-
-
             </form>
         </div>
     </div>

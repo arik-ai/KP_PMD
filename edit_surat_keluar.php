@@ -31,8 +31,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $perihal_surat = mysqli_real_escape_string($conn, $_POST['perihal_surat']);
     $tanggal_surat = mysqli_real_escape_string($conn, $_POST['tanggal_surat']);
     $penerima = mysqli_real_escape_string($conn, $_POST['penerima']);
-    $sifat_surat = mysqli_real_escape_string($conn, $_POST['sifat_surat']);
+    $id_sifat_surat = mysqli_real_escape_string($conn, $_POST['sifat_surat']);
     $dokumen = $data['dokumen_surat']; // Default dokumen lama
+
+    // Ambil nama_sifat_surat berdasarkan id_sifat_surat yang dipilih
+    $querySifat = "SELECT nama_sifat_surat FROM sifat_surat WHERE id_sifat = ?";
+    $stmtSifat = $conn->prepare($querySifat);
+    $stmtSifat->bind_param("i", $id_sifat_surat);
+    $stmtSifat->execute();
+    $resultSifat = $stmtSifat->get_result();
+    $rowSifat = $resultSifat->fetch_assoc();
+    $nama_sifat_surat = $rowSifat['nama_sifat_surat'];
 
     // Proses upload file jika ada file baru
     if (!empty($_FILES['dokumen_surat']['name'])) {
@@ -59,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         perihal_surat = '$perihal_surat', 
         tanggal_surat = '$tanggal_surat', 
         penerima = '$penerima', 
-        sifat_surat = '$sifat_surat', 
+        nama_sifat_surat = '$nama_sifat_surat', 
         dokumen_surat = '$dokumen' 
         WHERE id_surat_keluar = $id_surat_keluar";
 
@@ -69,6 +78,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Error: " . $query . "<br>" . mysqli_error($conn);
     }
 }
+
+// Ambil data sifat surat dari tabel sifat_surat untuk dropdown
+$sifat_surat_query = "SELECT * FROM sifat_surat";
+$sifat_surat_result = mysqli_query($conn, $sifat_surat_query);
 ?>
 
 <!DOCTYPE html>
@@ -89,6 +102,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php"><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php" class="active"><span class="icon">📤</span> Data Surat Keluar</a></li>
+            <li><a href="surat_perjanjian_kontrak.php"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
+            <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
@@ -105,6 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="profile-icon">👤</div>
             </div>
         </div>
+
         <!-- Form Edit Surat Keluar -->
         <div class="container">
             <h2>Edit Surat Keluar</h2>
@@ -135,9 +152,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="sifat_surat">Sifat</label>
                         <select id="sifat_surat" name="sifat_surat" required>
                             <option value="">--Sifat--</option>
-                            <option value="Penting" <?= $data['sifat_surat'] == 'Penting' ? 'selected' : ''; ?>>Penting</option>
-                            <option value="Rahasia" <?= $data['sifat_surat'] == 'Rahasia' ? 'selected' : ''; ?>>Rahasia</option>
-                            <option value="Biasa" <?= $data['sifat_surat'] == 'Biasa' ? 'selected' : ''; ?>>Biasa</option>
+                            <?php while ($row = mysqli_fetch_assoc($sifat_surat_result)) : ?>
+                                <option value="<?= htmlspecialchars($row['id_sifat']) ?>" <?= $data['nama_sifat_surat'] == $row['nama_sifat_surat'] ? 'selected' : ''; ?>>
+                                    <?= htmlspecialchars($row['nama_sifat_surat']) ?>
+                                </option>
+                            <?php endwhile; ?>
                         </select>
                     </div>
                 </div>
