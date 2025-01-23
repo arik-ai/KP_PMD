@@ -50,6 +50,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $upload_dir = 'uploads/';
         $file_path = $upload_dir . basename($file_surat);
 
+        // Validasi apakah file yang diupload adalah PDF
+        $file_ext = strtolower(pathinfo($file_surat, PATHINFO_EXTENSION));
+        if ($file_ext != 'pdf') {
+            echo "<script>alert('Hanya file PDF yang diperbolehkan!'); window.history.back();</script>";
+            exit;
+        }
+
         if (move_uploaded_file($tmp_name, $file_path)) {
             // Hapus file lama jika ada
             if (!empty($dokumen) && file_exists($upload_dir . $dokumen)) {
@@ -162,8 +169,8 @@ $sifat_surat_result = mysqli_query($conn, $sifat_surat_query);
                 </div>
                 <div class="form-row">
                     <div class="form-group full-width">
-                        <label for="dokumen_surat">Ubah File Surat (Opsional)</label>
-                        <input type="file" id="dokumen_surat" name="dokumen_surat">
+                        <label for="dokumen_surat">Ubah File Surat (hanya .PDF)</label>
+                        <input type="file" id="dokumen_surat" name="dokumen_surat" accept=".pdf">
                         <p>File saat ini: <strong><?= htmlspecialchars($data['dokumen_surat']); ?></strong></p>
                     </div>
                 </div>

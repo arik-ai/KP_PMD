@@ -40,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tanggal_surat = mysqli_real_escape_string($conn, $_POST['tanggal_surat']);
     $penerima = mysqli_real_escape_string($conn, $_POST['penerima']);
     $id_sifat_surat = mysqli_real_escape_string($conn, $_POST['sifat_surat']);
+    $user_input_keluar = $_SESSION['id']; // ID pengguna yang sedang login
 
     // Ambil nama sifat surat dari tabel sifat_surat berdasarkan ID yang dipilih
     $querySifat = "SELECT nama_sifat_surat FROM sifat_surat WHERE id_sifat = ?";
@@ -53,14 +54,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $no_surat = generateNoSurat($conn, $tanggal_surat, $kode_surat);
 
     // Simpan data ke tabel surat_keluar
-    $query = "INSERT INTO surat_keluar (no_surat, tanggal_surat, perihal_surat, penerima, nama_sifat_surat) 
-              VALUES (?, ?, ?, ?, ?)";
+    $query = "INSERT INTO surat_keluar (no_surat, tanggal_surat, perihal_surat, penerima, nama_sifat_surat, user_input_keluar) 
+              VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("sssss", $no_surat, $tanggal_surat, $perihal_surat, $penerima, $nama_sifat_surat);
+    $stmt->bind_param("sssssi", $no_surat, $tanggal_surat, $perihal_surat, $penerima, $nama_sifat_surat, $user_input_keluar);
 
     if ($stmt->execute()) {
         // Jika berhasil, arahkan ke detail_surat.php dengan parameter no_surat
-        header("Location: detail_surat_keluar.php?no_surat=" . urlencode($no_surat));
+        header("Location: detail_surat_keluar.php?id=" . urlencode($stmt->insert_id));
         exit;
     } else {
         echo "Error: " . $stmt->error;

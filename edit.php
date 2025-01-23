@@ -163,7 +163,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="form-row">
                     <div class="form-group full-width">
                         <label for="file_surat">Ubah File Surat (Opsional)</label>
-                        <input type="file" id="file_surat" name="file_surat">
+                        <input type="file" id="file_surat" name="file_surat" accept=".pdf">
                         <p>File saat ini: <strong><?= htmlspecialchars($data['dokumen']); ?></strong></p>
                     </div>
                 </div>

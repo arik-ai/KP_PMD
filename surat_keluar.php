@@ -102,28 +102,130 @@ $result = $stmt->get_result();
             border-radius: 5px;
             cursor: default;
         }
-        
-        .notification {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            position: relative;
+
+        .pagination .disabled {
+            pointer-events: none;
+        }
+        /* Tabel */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center; 
         }
 
-        .notification button {
-            background-color: transparent;
+        .table th, .table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color:#e6f7ff;
+            font-weight: bold;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .table th:nth-child(1), .table td:nth-child(1) {
+            width: 5%;
+        }
+
+        .table th:nth-child(2), .table td:nth-child(2) {
+            width: 27%;
+        }
+
+        .table th:nth-child(3), .table td:nth-child(3) {
+            width: 25%;
+        }
+
+        .table th:nth-child(4), .table td:nth-child(4) {
+            width: 15%;
+        }
+
+        .table th:nth-child(5), .table td:nth-child(5) {
+            width: 15%;
+        }
+
+        .table th:nth-child(6), .table td:nth-child(6) {
+            width: 10%;
+        }
+
+        .table th:nth-child(7), .table td:nth-child(7) {
+            width: 50%;
+        }
+
+        /* Tombol */
+        .btn {
+            padding: 6px 12px; 
+            font-size: 14px; 
+            border-radius: 4px; 
+        }
+
+        .btn-info {
+            background-color: #28a745;
             color: white;
             border: none;
-            font-size: 16px;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
         }
+
+        .btn-info:hover {
+            background-color: #218838;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        /* Gaya untuk btn-primary */
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}   
+
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <div class="logo">
@@ -180,7 +282,7 @@ $result = $stmt->get_result();
                         <th>Tanggal Surat</th>
                         <th>Penerima</th>
                         <th>Sifat</th>
-                        <th>Aksi</th>
+                        <th colspan="5">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -193,17 +295,15 @@ $result = $stmt->get_result();
                                 <td><?= htmlspecialchars($row['tanggal_surat']); ?></td>
                                 <td><?= htmlspecialchars($row['penerima']); ?></td>
                                 <td><?= htmlspecialchars($row['nama_sifat_surat']); ?></td>
-                                <td style="text-align: right;">
+                                <td>
                                     <!-- Jika kolom 'file_upload' kosong, tampilkan tombol Upload -->
                                     <?php if (empty($row['dokumen_surat'])): ?>
                                         <a href="upload.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-primary">Upload</a>
-                                    <?php endif; ?>
-                                    <a href="cetak_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-secondary">Cetak</a>
-                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                                        <a href="edit_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-warning">Edit</a>
-                                    <?php endif; ?>
-                                    <a href="surat_keluar.php?hapus_id=<?= $row['id_surat_keluar']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
-                                </td>
+                                    <?php endif; ?></td>
+                                   <td> <a href="cetak_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-secondary">Cetak</a></td>
+                                       <td> <a href="edit_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-warning">Edit</a></td>
+                                    <td><a href="surat_keluar.php?hapus_id=<?= $row['id_surat_keluar']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a></td>
+                                    <td><a href="detail_surat_keluar.php?id=<?= $row['id_surat_keluar']; ?>" class="btn btn-info">Detail</a> 
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>

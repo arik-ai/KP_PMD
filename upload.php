@@ -146,7 +146,7 @@ if ($existingFile) {
                 <form action="upload.php?id=<?= htmlspecialchars($idSuratKeluar); ?>" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="file_surat">Pilih File:</label>
-                        <input type="file" name="file_surat" id="file_surat" required>
+                        <input type="file" name="file_surat" id="file_surat" required accept=".PDF">
                     </div>
                     <button type="submit" class="btn btn-primary">Upload</button>
                     <a href="surat_keluar.php" class="btn btn-secondary">Kembali</a>

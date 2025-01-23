@@ -7,32 +7,34 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// Koneksi ke database
 include 'db.php';
 
-// Ambil nomor surat dari URL
-$no_surat = isset($_GET['no_surat']) ? mysqli_real_escape_string($conn, $_GET['no_surat']) : null;
-
-if (!$no_surat) {
-    echo "Nomor surat tidak ditemukan.";
+// Ambil ID surat_keluar dari URL
+$id_surat_keluar = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($id_surat_keluar == 0) {
+    echo "ID Surat tidak valid.";
     exit;
 }
 
-// Ambil data surat berdasarkan nomor surat
-$query = "SELECT * FROM surat_keluar WHERE no_surat = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("s", $no_surat);
-$stmt->execute();
-$result = $stmt->get_result();
+// Ambil data surat_keluar berdasarkan id_surat_keluar
+$querySurat = "SELECT surat_keluar.*, users.username AS user_input_keluar 
+              FROM surat_keluar 
+              LEFT JOIN users ON surat_keluar.user_input_keluar = users.id 
+              WHERE surat_keluar.id_surat_keluar = ?";
+$stmtSurat = $conn->prepare($querySurat);
+$stmtSurat->bind_param("i", $id_surat_keluar);
+$stmtSurat->execute();
+$resultSurat = $stmtSurat->get_result();
 
-if ($result->num_rows === 0) {
-    echo "Data surat tidak ditemukan.";
+if ($resultSurat->num_rows == 0) {
+    echo "Surat tidak ditemukan.";
     exit;
 }
 
-$data = $result->fetch_assoc();
+$rowSurat = $resultSurat->fetch_assoc();
+
+// Display the Surat Details
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,50 +42,6 @@ $data = $result->fetch_assoc();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Surat Keluar</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .detail-container {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: #ffffff;
-        }
-        .detail-table th, .detail-table td {
-            padding: 15px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-        .detail-table th {
-            color:rgb(2, 2, 2);
-            font-size: 16px;
-        }
-        .detail-table tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .detail-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 15px;
-            margin-top: 20px;
-            font-size: 14px;
-            text-decoration: none;
-            color: #ffffff;
-            background-color: #007bff;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
 </head>
 <body>
     <div class="sidebar">
@@ -99,6 +57,7 @@ $data = $result->fetch_assoc();
             <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
+            <li><a href="data_master.php"><span class="icon">⚙️</span> Data Master</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
         </ul>
     </div>
@@ -113,40 +72,41 @@ $data = $result->fetch_assoc();
         </div>
 
         <div class="container">
-            <div class="detail-container">
-                <div class="detail-header">
-                    <h2>Detail Surat Keluar</h2>
-                    <p>Informasi lengkap mengenai surat keluar.</p>
-                </div>
-                <table class="detail-table">
-                    <tr>
-                        <th>No Surat</th>
-                        <td><?= htmlspecialchars($data['no_surat']); ?></td>
-                    </tr>
-                    <tr>
-                        <th>Perihal</th>
-                        <td><?= htmlspecialchars($data['perihal_surat']); ?></td>
-                    </tr>
-                    <tr>
-                        <th>Tanggal Surat</th>
-                        <td><?= htmlspecialchars($data['tanggal_surat']); ?></td>
-                    </tr>
-                    <tr>
-                        <th>Penerima</th>
-                        <td><?= htmlspecialchars($data['penerima']); ?></td>
-                    </tr>
-                    <tr>
-                        <th>Sifat Surat</th>
-                        <td><?= htmlspecialchars($data['nama_sifat_surat']); ?></td>
-                    </tr>
-                </table>
-                <a href="surat_keluar.php" class="btn">Kembali ke Data Surat Keluar</a>
-            </div>
+            <h2>Detail Surat Keluar</h2>
+
+            <table class="table">
+                <tr>
+                    <th>No Surat</th>
+                    <td><?= htmlspecialchars($rowSurat['no_surat']); ?></td>
+                </tr>
+                <tr>
+                    <th>Perihal</th>
+                    <td><?= htmlspecialchars($rowSurat['perihal_surat']); ?></td>
+                </tr>
+                <tr>
+                    <th>Tanggal Surat</th>
+                    <td><?= htmlspecialchars($rowSurat['tanggal_surat']); ?></td>
+                </tr>
+                <tr>
+                    <th>Penerima</th>
+                    <td><?= htmlspecialchars($rowSurat['penerima']); ?></td>
+                </tr>
+                <tr>
+                    <th>Sifat Surat</th>
+                    <td><?= htmlspecialchars($rowSurat['nama_sifat_surat']); ?></td>
+                </tr>
+                <tr>
+                    <th>Penginput</th>
+                    <td><?= htmlspecialchars($rowSurat['user_input_keluar']); ?></td>
+                </tr>
+            </table>
+
+            <a href="surat_keluar.php" class="btn btn-secondary">Kembali</a>
         </div>
     </div>
 
     <footer>
-    <p>https://dpmd.pamekasankab.go.id/</p>
+        <p>https://dpmd.pamekasankab.go.id/</p>
     </footer>
 </body>
 </html>

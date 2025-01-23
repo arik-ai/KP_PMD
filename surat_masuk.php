@@ -105,6 +105,119 @@ $result = $stmt->get_result();
         .pagination .disabled {
             pointer-events: none;
         }
+        /* Tabel */
+        /* Tabel */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center; /* Center align content in the table */
+        }
+
+        .table th, .table td {
+            padding: 4px; /* Increased padding for better spacing */
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #e6f7ff;
+            font-weight: bold;
+        }
+
+        .table th, .table td {
+            vertical-align: middle; /* Vertically center content */
+        }
+
+        /* Atur lebar kolom sesuai dengan kontennya */
+        .table th:nth-child(1), .table td:nth-child(1) {
+            width: 5%;
+        }
+
+        .table th:nth-child(2), .table td:nth-child(2) {
+            width: 20%;
+        }
+
+        .table th:nth-child(3), .table td:nth-child(3) {
+            width: 20%;
+        }
+
+        .table th:nth-child(4), .table td:nth-child(4) {
+            width: 15%;
+        }
+
+        .table th:nth-child(5), .table td:nth-child(5) {
+            width: 15%;
+        }
+
+        .table th:nth-child(6), .table td:nth-child(6) {
+            width: 15%;
+        }
+
+        .table th:nth-child(7), .table td:nth-child(7) {
+            width: 10%;
+        }
+
+        .table th:nth-child(8), .table td:nth-child(8) {
+            width: 40%;
+        }
+        /* Tombol */
+        .btn {
+            padding: 6px 12px; /* Smaller padding */
+            font-size: 14px; /* Smaller font size */
+            border-radius: 4px; /* Slightly smaller border-radius */
+        }
+
+
+        .btn-info:hover {
+            background-color: #218838;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: white;
+            border: none;
+            padding: 6px 12px; /* Smaller padding */
+            border-radius: 4px; /* Slightly smaller border-radius */
+            font-size: 14px; /* Smaller font size */
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px; /* Smaller padding */
+            border-radius: 4px; /* Slightly smaller border-radius */
+            font-size: 14px; /* Smaller font size */
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Warna tombol Detail */
+        .btn-info {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-info:hover {
+            background-color: #218838;
+        }
+
+            
     </style>
 
 </head>
@@ -159,7 +272,7 @@ $result = $stmt->get_result();
                         <th>Diterima Tanggal</th>
                         <th>Instansi Pengirim</th>
                         <th>sifat</th>
-                        <th>Aksi</th>
+                        <th colspan="4">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -174,12 +287,10 @@ $result = $stmt->get_result();
                                 <td><?= htmlspecialchars($row['pengirim']); ?></td>
                                 <td><?= htmlspecialchars($row['nama_sifat_surat']); ?></td>
                                 <td>
-                                    <a href="cetak.php?id=<?= $row['id_surat']; ?>" class="btn btn-secondary">Cetak</a>
-                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                                        <a href="edit.php?id=<?= $row['id_surat']; ?>" class="btn btn-warning">Edit</a>
-                                    <?php endif; ?>
-                                    <a href="?id=<?= $row['id_surat']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
-                                </td>
+                                    <a href="cetak.php?id=<?= $row['id_surat']; ?>" class="btn btn-secondary">Cetak</a></td>
+                                    <td> <a href="edit.php?id=<?= $row['id_surat']; ?>" class="btn btn-warning">Edit</a></td>
+                                    <td><a href="?id=<?= $row['id_surat']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a></td>
+                                    <td><a href="detail_surat.php?id=<?= $row['id_surat']; ?>" class="btn btn-info">Detail</a> <!-- Tombol Detail -->
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
