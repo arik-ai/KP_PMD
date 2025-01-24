@@ -102,6 +102,37 @@ $totalSemua = $totalMasuk + $totalKeluar;
     table tbody tr:last-child td {
         font-weight: bold;
     }
+    .button-container {
+    text-align: left;
+    margin-top: 20px; /* Menambah jarak dari konten sebelumnya */
+    }
+
+    .button-container form {
+        display: inline-block; /* Pastikan form ditampilkan dalam satu baris */
+        margin-right: 10px; /* Memberikan jarak antar tombol */
+    }
+
+    .button-container button {
+        padding: 10px 20px; /* Menambah padding tombol untuk tampilan yang lebih baik */
+        border: none;
+        font-size: 16px; /* Menyesuaikan ukuran font tombol */
+    }
+    
+/* Styling untuk tombol Download Excel dengan warna hijau */
+    .btn-success {
+        background-color: #28a745; /* Warna hijau */
+        color: white; /* Teks putih */
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px; /* Agar tombol terlihat sedikit melengkung */
+    }
+
+    .btn-success:hover {
+        background-color: #218838; /* Warna hijau yang lebih gelap saat hover */
+    }
+
 </style>
 
 </head>
@@ -115,8 +146,12 @@ $totalSemua = $totalMasuk + $totalKeluar;
         <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
         <li><a href="surat_masuk.php"><span class="icon">📂</span> Data Surat Masuk</a></li>
         <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
+        <li><a href="surat_perjanjian_kontrak.php"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
+        <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
+        <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
         <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
         <li><a href="laporan.php" class="active"><span class="icon">📊</span> Laporan</a></li>
+        <li><a href="data_master.php"><span class="icon">⚙️</span> Data Master</a></li>
         <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
     </ul>
 </div>
@@ -224,6 +259,17 @@ $totalSemua = $totalMasuk + $totalKeluar;
                 </tr>
             </tbody>
         </table>
+        <div class="button-container">
+            <form action="cetak_laporan.php" method="POST" style="display: inline-block; margin-right: 10px;">
+                <input type="hidden" name="tahun" value="<?= $tahun ?>">
+                <button type="submit" class="btn btn-danger">Download PDF</button>
+            </form>
+            <form action="cetak_laporan_excel.php" method="POST" style="display: inline-block;">
+                <input type="hidden" name="tahun" value="<?= $tahun ?>">
+                <button type="submit" class="btn btn-success">Download Excel</button> <!-- Ganti dengan btn-success untuk warna hijau -->
+            </form>
+        </div>
+
     </div>
 </div>
 </body>

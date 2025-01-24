@@ -232,12 +232,17 @@ body, html {
     border-radius: 8px;
     overflow: hidden;
     text-align: center;
+    table-layout: fixed;
+    border-collapse: collapse;
 }
 
 .table th,
 .table td {
-    padding: 12px 15px;
     border: 1px solid #ddd;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    text-align: left;
+    padding: 8px;
 }
 
 .table th {
@@ -245,6 +250,9 @@ body, html {
     color: #333;
 }
 
+.table td {
+    vertical-align: top;
+}
 .table tr:nth-child(even) {
     background-color: #f9f9f9; /* Warna zebra strip */
 }

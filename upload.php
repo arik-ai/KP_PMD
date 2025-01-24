@@ -34,29 +34,42 @@ if ($existingFile) {
         if (isset($_FILES['file_surat']) && $_FILES['file_surat']['error'] === UPLOAD_ERR_OK) {
             $fileTmpPath = $_FILES['file_surat']['tmp_name'];
             $fileName = $_FILES['file_surat']['name'];
+            $fileSize = $_FILES['file_surat']['size'];
+            $fileType = $_FILES['file_surat']['type'];
 
-            // Tentukan folder tujuan penyimpanan
-            $uploadFileDir = 'uploads/';
-            if (!is_dir($uploadFileDir)) {
-                mkdir($uploadFileDir, 0777, true);
-            }
+            // Memeriksa ekstensi file
+            $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+            $allowedExtensions = ['pdf'];
 
-            $destPath = $uploadFileDir . $fileName;
+            // Memeriksa tipe MIME file
+            $allowedMimeTypes = ['application/pdf'];
 
-            if (move_uploaded_file($fileTmpPath, $destPath)) {
-                // Simpan nama file saja ke database
-                $query = "UPDATE surat_keluar SET dokumen_surat = ? WHERE id_surat_keluar = ?";
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param("si", $fileName, $idSuratKeluar);
-
-                if ($stmt->execute()) {
-                    header("Location: surat_keluar.php?message=upload_success");
-                    exit;
-                } else {
-                    $errorMsg = "Gagal menyimpan informasi file ke database.";
-                }
+            if (!in_array(strtolower($fileExtension), $allowedExtensions) || !in_array($fileType, $allowedMimeTypes)) {
+                $errorMsg = "Hanya file PDF yang diperbolehkan.";
             } else {
-                $errorMsg = "Gagal memindahkan file ke direktori tujuan.";
+                // Tentukan folder tujuan penyimpanan
+                $uploadFileDir = 'uploads/';
+                if (!is_dir($uploadFileDir)) {
+                    mkdir($uploadFileDir, 0777, true);
+                }
+
+                $destPath = $uploadFileDir . $fileName;
+
+                if (move_uploaded_file($fileTmpPath, $destPath)) {
+                    // Simpan nama file saja ke database
+                    $query = "UPDATE surat_keluar SET dokumen_surat = ? WHERE id_surat_keluar = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("si", $fileName, $idSuratKeluar);
+
+                    if ($stmt->execute()) {
+                        header("Location: surat_keluar.php?message=upload_success");
+                        exit;
+                    } else {
+                        $errorMsg = "Gagal menyimpan informasi file ke database.";
+                    }
+                } else {
+                    $errorMsg = "Gagal memindahkan file ke direktori tujuan.";
+                }
             }
         } else {
             $errorMsg = "Tidak ada file yang diunggah atau terjadi kesalahan dalam proses unggah.";
@@ -72,6 +85,25 @@ if ($existingFile) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unggah File Surat</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Menghilangkan border pada tombol */
+        button {
+            border: none;
+            outline: none; /* Menghilangkan outline jika ada */
+            background-color: #3498db; /* Ubah sesuai warna yang diinginkan */
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px; /* Agar tombol terlihat melengkung */
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9; /* Warna tombol saat hover */
+        }
+
+    </style>
 </head>
 <body>
     <!-- Sidebar -->
@@ -83,8 +115,12 @@ if ($existingFile) {
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" class="active"><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
+            <li><a href="surat_perjanjian_kontrak.php"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
+            <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
+            <li><a href="data_master.php"><span class="icon">⚙️</span> Data Master</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
         </ul>
     </div>
@@ -100,7 +136,7 @@ if ($existingFile) {
             </div>
         </div>
         <div class="container">
-            <h2>Upload File Surat</h2>
+            <h2>Upload File Surat (.PDF)</h2>
             <?php if (isset($errorMsg)): ?>
                 <div class="error-message">
                     <?= htmlspecialchars($errorMsg); ?>
@@ -110,7 +146,7 @@ if ($existingFile) {
                 <form action="upload.php?id=<?= htmlspecialchars($idSuratKeluar); ?>" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="file_surat">Pilih File:</label>
-                        <input type="file" name="file_surat" id="file_surat" required>
+                        <input type="file" name="file_surat" id="file_surat" required accept=".PDF">
                     </div>
                     <button type="submit" class="btn btn-primary">Upload</button>
                     <a href="surat_keluar.php" class="btn btn-secondary">Kembali</a>

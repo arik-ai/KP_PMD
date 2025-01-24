@@ -78,54 +78,33 @@
             </div>
             <h1>Login</h1>
             <?php
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                // Konfigurasi database
-                $host = 'localhost';
-                $username = 'root';
-                $password = '';
-                $database = 'dpmd';
+                session_start();
+                include 'db.php'; // Ensure this file connects to your database
 
-                // Membuat koneksi ke database
-                $conn = new mysqli($host, $username, $password, $database);
+                // Check if the form is submitted
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    $username = mysqli_real_escape_string($conn, $_POST['username']);
+                    $password = mysqli_real_escape_string($conn, $_POST['password']);
+                    
+                    // Query to check if user exists
+                    $query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+                    $result = mysqli_query($conn, $query);
 
-                // Cek koneksi
-                if ($conn->connect_error) {
-                    die("Koneksi gagal: " . $conn->connect_error);
-                }
+                    // If user exists, set session variables
+                    if (mysqli_num_rows($result) > 0) {
+                        $row = mysqli_fetch_assoc($result);
+                        $_SESSION['username'] = $row['username'];
+                        $_SESSION['id'] = $row['id'];
+                        $_SESSION['role'] = $row['role']; // assuming the 'role' field exists
 
-                // Ambil data dari form login
-                $user = $_POST['username'];
-                $pass = $_POST['password'];
-
-                // Cek username dan password di database (case-sensitive dengan BINARY)
-                $sql = "SELECT * FROM users WHERE BINARY username = ? AND password = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ss", $user, $pass);
-                $stmt->execute();
-                $result = $stmt->get_result();
-
-                // Jika username dan password ditemukan
-                if ($result->num_rows > 0) {
-                    $row = $result->fetch_assoc();
-                    session_start();
-                    $_SESSION['username'] = $row['username'];
-                    $_SESSION['role'] = $row['role'];
-
-                    // Redirect berdasarkan peran
-                    if ($row['role'] === 'admin') {
+                        // Redirect to main page/dashboard
                         header("Location: index.php");
+                        exit;
                     } else {
-                        header("Location: index.php");
+                        echo "Invalid username or password.";
                     }
-                    exit;
-                } else {
-                    echo "<p style='color: red; text-align: center;'>Username atau password salah!</p>";
                 }
-
-                $stmt->close();
-                $conn->close();
-            }
-            ?>
+                ?>
 
             <form action="" method="POST">
                 <div class="form-group">
@@ -143,6 +122,8 @@
 
                 <button type="submit" class="login-button">Login</button>
             </form>
+            <br>
+            <p><a href="register.php" style="text-decoration: none; color: #007bff;">Belum mempunyai Akun? Registrasi Sekarang</a></p>
         </div>
         <div class="image-section"></div>
     </div>
