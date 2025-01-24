@@ -116,8 +116,10 @@ if (!isset($_SESSION['username'])) {
     <div class="sidebar">
         <img src="logo.png" alt="Administrasi" class="img-fluid">
         <ul class="sidebar-menu">
-            <li><a href="index.php" class="active"><span class="icon">🏠</span> Dashboard</a></li>
-            <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
+            <li><a href="index.php" class="active"><span class="icon">🏠</span> DASHBOARD</a></li>
+            <li><a href="surat_masuk.php"><span class="icon">📂</span>ADMINISTRASI</a></li>
+            <li><a href="data_inven.php"><span class="icon">🛒</span>INVENTARIS</a></li>
+            <li><a href="logout.php"><span class="icon">🔒</span> LOGOUT</a></li>
         </ul>
     </div>
     <div class="main-content">
@@ -134,26 +136,7 @@ if (!isset($_SESSION['username'])) {
         <!-- Dashboard Content -->
         <div id="dashboard-content">
             <h3>Selamat Datang di Sistem Administrasi dan Inventori</h3>
-            <p>Kami hadir untuk mempermudah pengelolaan administrasi dan inventaris Anda!<br>
-            Optimalkan proses kerja Anda dengan solusi terpadu dan intuitif. Mari mulai perjalanan Anda bersama kami!</p>
-
-            <div class="row justify-content-center">
-                <div class="col-md-12">
-                    <div class="card text-center administrasi">
-                        <a href="surat_masuk.php" onclick="showContent('administrasi')">
-                            <img src="logo_admin.png" alt="Administrasi" class="img-fluid">
-                            <h5 class="card-title">ADMINISTRASI</h5>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="card text-center inventaris">
-                        <a href="data_inven.php" onclick="showContent('inventaris')">
-                            <img src="logo_inven.png" alt="Inventaris" class="img-fluid">
-                            <h5 class="card-title">INVENTARIS</h5>
-                        </a>
-                    </div>
-                </div>
+            
             </div>
 
 

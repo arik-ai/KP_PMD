@@ -1,44 +1,3 @@
-<!-- <?php
-// Koneksi ke database
-include 'db.php';
-
-// Header untuk file Excel
-header("Content-Type: application/vnd.ms-excel");
-header("Content-Disposition: attachment; filename=data_inventaris.xls");
-header("Pragma: no-cache");
-header("Expires: 0");
-
-// Ambil data inventaris
-$query = "SELECT * FROM inventaris";
-$result = $conn->query($query);
-
-// Output data ke Excel
-echo "<table border='1'>";
-echo "<tr>
-        <th>No</th>
-        <th>Nama Barang</th>
-        <th>Stok</th>
-        <th>Lokasi Barang</th>
-        <th>Kondisi Barang</th>
-    </tr>";
-
-if ($result->num_rows > 0) {
-    $no = 1;
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr>
-                <td>{$no}</td>
-                <td>{$row['nama_barang']}</td>
-                <td>{$row['stok']}</td>
-                <td>{$row['lokasi_barang']}</td>
-                <td>{$row['kondisi_barang']}</td>
-            </tr>";
-        $no++;
-    }
-}
-echo "</table>";
-?> -->
-
-
 <?php
 include 'db.php';
 
@@ -89,9 +48,19 @@ header("Cache-Control: max-age=0");
 
 // Mulai output HTML tabel
 echo "<table border='1'>";
+
+// Tambahkan judul lokasi
+if (!empty($lokasiBarang)) {
+    echo "<tr><th colspan='7'>Data Inventaris untuk Lokasi: " . htmlspecialchars($lokasiBarang) . "</th></tr>";
+} else {
+    echo "<tr><th colspan='7'>Data Inventaris untuk Semua Lokasi</th></tr>";
+}
+
 echo "<thead>";
 echo "<tr>";
 echo "<th>No</th>";
+echo "<th>Kode Barang</th>";
+echo "<th>Waktu Pengadaan</th>";
 echo "<th>Nama Barang</th>";
 echo "<th>Stok</th>";
 echo "<th>Lokasi Barang</th>";
@@ -105,6 +74,8 @@ $no = 1;
 while ($row = $result->fetch_assoc()) {
     echo "<tr>";
     echo "<td>" . $no++ . "</td>";
+    echo "<td>" . htmlspecialchars($row['kode_barang']) . "</td>";
+    echo "<td>" . htmlspecialchars($row['waktu_pengadaan']) . "</td>";
     echo "<td>" . htmlspecialchars($row['nama_barang']) . "</td>";
     echo "<td>" . htmlspecialchars($row['stok']) . "</td>";
     echo "<td>" . htmlspecialchars($row['lokasi_barang']) . "</td>";
@@ -117,4 +88,3 @@ echo "</table>";
 
 $conn->close();
 ?>
-

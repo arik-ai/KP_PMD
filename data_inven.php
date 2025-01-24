@@ -228,12 +228,15 @@ $result = $dataStmt->get_result();
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Kode</th>
+                        <th>Waktu Pengadaan</th>
                         <th>Nama Barang</th>
                         <th>Stok</th>
                         <th>Lokasi Barang</th>
                         <th>Kondisi Barang</th>
                         <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                         <th>Aksi</th>
+                        <!-- <th>Dokumentasi</th> -->
                         <?php endif; ?>
                     </tr>
                 </thead>
@@ -242,15 +245,26 @@ $result = $dataStmt->get_result();
                         <?php $no = $offset + 1; while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td><?= $no++; ?></td>
+                                <td><?= htmlspecialchars($row['kode_barang']); ?></td>
+                                <td><?= htmlspecialchars($row['waktu_pengadaan']); ?></td>
                                 <td><?= htmlspecialchars($row['nama_barang']); ?></td>
                                 <td><?= htmlspecialchars($row['stok']); ?></td>
                                 <td><?= htmlspecialchars($row['lokasi_barang']); ?></td>
                                 <td><?= htmlspecialchars($row['kondisi_barang']); ?></td>
                                 <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                                 <td>
+                                    <a href="detail_inven.php?id=<?= $row['id_inventaris']; ?>" class="btn btn-secondary">Detail</a>
                                     <a href="edit_inven.php?id=<?= $row['id_inventaris']; ?>" class="btn btn-warning">Edit</a>
                                     <a href="hapus_inven.php?id=<?= $row['id_inventaris']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a>
                                 </td>
+                                <!-- <td>
+                                    <?php if (!empty($row['foto_barang'])): ?>
+                                        <img src="<?= htmlspecialchars($row['foto_barang']); ?>" alt="Foto Barang" width="50" height="50">
+                                    <?php else: ?>
+                                        Tidak ada foto
+                                    <?php endif; ?>
+                                </td> -->
+
                                 <?php endif; ?>
                             </tr>
                         <?php endwhile; ?>
