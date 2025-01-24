@@ -85,6 +85,7 @@ include 'db.php';
             font-size: 1rem;
             color: #777;
         }
+        
     </style>
 </head>
 <body>

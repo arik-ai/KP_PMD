@@ -199,6 +199,56 @@ $result = $stmt->get_result();
             border-radius: 5px;
             cursor: default;
         }
+                        /* Tabel */
+                        .table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    text-align: center; /* Center align content in the table */
+                }
+
+                .table th, .table td {
+                    padding: 4px; /* Increased padding for better spacing */
+                    text-align: center;
+                    border: 1px solid #ddd;
+                }
+
+                .table th {
+                    background-color: #e6f7ff;
+                    font-weight: bold;
+                }
+
+                .table th, .table td {
+                    vertical-align: middle; /* Vertically center content */
+                }
+
+                /* Atur lebar kolom sesuai dengan kontennya */
+                .table th:nth-child(1), .table td:nth-child(1) {
+                    width: 5%;
+                }
+
+                .table th:nth-child(2), .table td:nth-child(2) {
+                    width: 20%;
+                }
+
+                .table th:nth-child(3), .table td:nth-child(3) {
+                    width: 20%;
+                }
+
+                .table th:nth-child(4), .table td:nth-child(4) {
+                    width: 15%;
+                }
+
+                .table th:nth-child(5), .table td:nth-child(5) {
+                    width: 15%;
+                }
+
+                .table th:nth-child(6), .table td:nth-child(6) {
+                    width: 15%;
+                }
+
+                .table th:nth-child(7), .table td:nth-child(7) {
+                    width: 30%;
+                }
     </style>
 </head>
 <body>

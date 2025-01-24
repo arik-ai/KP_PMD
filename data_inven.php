@@ -170,7 +170,243 @@ $result = $dataStmt->get_result();
                 border-color: #0078d4;
                 box-shadow: 0 0 5px rgba(0, 120, 212, 0.5);
             }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 10px 0;
+        }
 
+        .pagination li {
+            margin: 0 5px;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            color: #007bff;
+            padding: 8px 12px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .pagination .disabled {
+            color: #ccc;
+            pointer-events: none;
+                }
+        /* Filter Lokasi dan Pencarian */
+            .search-bar,
+            .filter-lokasi {
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 20px;
+                padding: 5px 15px;
+            }
+
+            .search-bar input,
+            .filter-lokasi select {
+                padding: 10px;
+                font-size: 14px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+
+            .search-bar button,
+            .filter-lokasi button {
+                padding: 10px 15px;
+                font-size: 14px;
+                color: white;
+                background-color: #0078d4;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+            }
+
+            .search-bar button:hover,
+            .filter-lokasi button:hover {
+                background-color: #005bb5;
+                transform: scale(1.05);
+            }
+
+            .filter-lokasi select {
+                width: 250px; /* Ukuran dropdown */
+                max-width: 100%;
+            }
+
+            .search-bar input:focus,
+            .filter-lokasi select:focus {
+                outline: none;
+                border-color: #0078d4;
+                box-shadow: 0 0 5px rgba(0, 120, 212, 0.5);
+            }
+                /* Gaya Pagination */
+                .pagination {
+                    display: flex;
+                    justify-content: center;
+                    list-style: none;
+                    margin: 20px 0;
+                    padding: 0;
+                }
+
+                .pagination li {
+                    margin: 0 5px;
+                }
+
+                .pagination a {
+                    display: inline-block;
+                    padding: 10px 15px;
+                    color: white;
+                    background-color: #007bff;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    transition: background-color 0.3s ease;
+                }
+
+                .pagination a:hover {
+                    background-color: #0056b3;
+                }
+
+                .pagination .active {
+                    background-color: #0056b3;
+                    font-weight: bold;
+                    pointer-events: none;
+                }
+
+                .pagination .disabled span {
+                    display: inline-block;
+                    padding: 10px 15px;
+                    color: #ffffff;
+                    background-color: #cccccc;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    cursor: default;
+                }
+
+                .pagination .disabled {
+                    pointer-events: none;
+                }
+                /* Tabel */
+                /* Tabel */
+                .table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    text-align: center; /* Center align content in the table */
+                }
+
+                .table th, .table td {
+                    padding: 4px; /* Increased padding for better spacing */
+                    text-align: center;
+                    border: 1px solid #ddd;
+                }
+
+                .table th {
+                    background-color: #e6f7ff;
+                    font-weight: bold;
+                }
+
+                .table th, .table td {
+                    vertical-align: middle; /* Vertically center content */
+                }
+
+                /* Atur lebar kolom sesuai dengan kontennya */
+                .table th:nth-child(1), .table td:nth-child(1) {
+                    width: 5%;
+                }
+
+                .table th:nth-child(2), .table td:nth-child(2) {
+                    width: 20%;
+                }
+
+                .table th:nth-child(3), .table td:nth-child(3) {
+                    width: 20%;
+                }
+
+                .table th:nth-child(4), .table td:nth-child(4) {
+                    width: 15%;
+                }
+
+                .table th:nth-child(5), .table td:nth-child(5) {
+                    width: 15%;
+                }
+
+                .table th:nth-child(6), .table td:nth-child(6) {
+                    width: 15%;
+                }
+
+                .table th:nth-child(7), .table td:nth-child(7) {
+                    width: 10%;
+                }
+
+                .table th:nth-child(8), .table td:nth-child(8) {
+                    width: 40%;
+                }
+                /* Tombol */
+                .btn {
+                    padding: 6px 12px; /* Smaller padding */
+                    font-size: 14px; /* Smaller font size */
+                    border-radius: 4px; /* Slightly smaller border-radius */
+                }
+
+
+                .btn-info:hover {
+                    background-color: #218838;
+                }
+
+                .btn-warning {
+                    background-color: #ffc107;
+                    color: white;
+                    border: none;
+                    padding: 6px 12px; /* Smaller padding */
+                    border-radius: 4px; /* Slightly smaller border-radius */
+                    font-size: 14px; /* Smaller font size */
+                    text-decoration: none;
+                    display: inline-block;
+                }
+
+                .btn-warning:hover {
+                    background-color: #e0a800;
+                }
+
+                .btn-danger {
+                    background-color: #dc3545;
+                    color: white;
+                    border: none;
+                    padding: 6px 12px; /* Smaller padding */
+                    border-radius: 4px; /* Slightly smaller border-radius */
+                    font-size: 14px; /* Smaller font size */
+                    text-decoration: none;
+                    display: inline-block;
+                }
+
+                .btn-danger:hover {
+                    background-color: #c82333;
+                }
+
+                /* Warna tombol Detail */
+                .btn-info {
+                    background-color: #28a745;
+                    color: white;
+                    border: none;
+                    padding: 6px 16px;
+                    border-radius: 5px;
+                    text-decoration: none;
+                    display: inline-block;
+                }
+
+                .btn-info:hover {
+                    background-color: #218838;
+                }
     </style>
 </head>
 <body>
