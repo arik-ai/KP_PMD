@@ -10,7 +10,7 @@ if (isset($_GET['id'])) {
     $id = (int) $_GET['id']; // Make sure the ID is an integer
 
     // Query to get the file path from the database
-    $sql = "SELECT dokumen_kontrak FROM surat_kontrak WHERE id_kontrak = ?";
+    $sql = "SELECT dokumen_keputusan FROM surat_keputusan WHERE id_keputusan = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -19,11 +19,11 @@ if (isset($_GET['id'])) {
     // Check if a file exists
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $filePath = $row['dokumen_kontrak'];
+        $filePath = $row['dokumen_keputusan'];
         
         // Check if the column is empty
         if (empty($filePath)) {
-            echo "<script>alert('File tidak ada.'); window.location.href='surat_kontrak.php';</script>";
+            echo "<script>alert('File tidak ada.'); window.location.href='surat_keputusan.php';</script>";
             exit;
         }
 
@@ -42,12 +42,12 @@ if (isset($_GET['id'])) {
             readfile($fullFilePath); // Read the file and send it to the user
             exit;
         } else {
-            echo "<script>alert('File tidak ditemukan.'); window.location.href='surat_kontrak.php';</script>";
+            echo "<script>alert('File tidak ditemukan.'); window.location.href='surat_keputusan.php';</script>";
         }
     } else {
-        echo "<script>alert('ID dokumen tidak valid.'); window.location.href='surat_kontrak.php';</script>";
+        echo "<script>alert('ID dokumen tidak valid.'); window.location.href='surat_keputusan.php';</script>";
     }
 } else {
-    echo "<script>alert('Tidak ada dokumen yang dipilih.'); window.location.href='surat_kontrak.php';</script>";
+    echo "<script>alert('Tidak ada dokumen yang dipilih.'); window.location.href='surat_keputusan.php';</script>";
 }
 ?>

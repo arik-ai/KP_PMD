@@ -75,83 +75,169 @@ $result = $stmt->get_result();
     <title>Data Master - Sifat Surat</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Gaya Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            list-style: none;
-            margin: 20px 0;
-            padding: 0;
-        }
+                /* Gaya Pagination */
+                .pagination {
+                    display: flex;
+                    justify-content: center;
+                    list-style: none;
+                    margin: 20px 0;
+                    padding: 0;
+                }
 
-        .pagination li {
-            margin: 0 5px;
-        }
+                .pagination li {
+                    margin: 0 5px;
+                }
 
-        .pagination a {
-            display: inline-block;
-            padding: 10px 15px;
-            color: white;
-            background-color: #007bff;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
+                .pagination a {
+                    display: inline-block;
+                    padding: 10px 15px;
+                    color: white;
+                    background-color: #007bff;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    transition: background-color 0.3s ease;
+                }
 
-        .pagination a:hover {
-            background-color: #0056b3;
-        }
+                .pagination a:hover {
+                    background-color: #0056b3;
+                }
 
-        .pagination .active {
-            background-color: #0056b3;
-            font-weight: bold;
-            pointer-events: none;
-        }
+                .pagination .active {
+                    background-color: #0056b3;
+                    font-weight: bold;
+                    pointer-events: none;
+                }
 
-        .pagination .disabled span {
-            display: inline-block;
-            padding: 10px 15px;
-            color: #ffffff;
-            background-color: #cccccc;
-            text-decoration: none;
-            border-radius: 5px;
-            cursor: default;
-        }
+                .pagination .disabled span {
+                    display: inline-block;
+                    padding: 10px 15px;
+                    color: #ffffff;
+                    background-color: #cccccc;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    cursor: default;
+                }
 
-        .pagination .disabled {
-            pointer-events: none;
-        }
+                .pagination .disabled {
+                    pointer-events: none;
+                }
+                /* Tabel */
+                .table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    text-align: center; /* Center align content in the table */
+                }
 
-        /* Styling Form */
-        .form-container {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+                .table th, .table td {
+                    padding: 4px; /* Increased padding for better spacing */
+                    text-align: center;
+                    border: 1px solid #ddd;
+                }
 
-        .form-container input[type="text"] {
-            width: 40%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
+                .table th {
+                    background-color: #e6f7ff;
+                    font-weight: bold;
+                }
 
-        .form-container button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+                .table th, .table td {
+                    vertical-align: middle; /* Vertically center content */
+                }
 
-        .form-container button:hover {
-            background-color: #0056b3;
-        }
+                /* Atur lebar kolom sesuai dengan kontennya */
+                .table th:nth-child(1), .table td:nth-child(1) {
+                    width: 5%;
+                }
 
+                .table th:nth-child(2), .table td:nth-child(2) {
+                    width: 20%;
+                }
+
+                .table th:nth-child(3), .table td:nth-child(3) {
+                    width: 20%;
+                }
+
+                .btn {
+                    padding: 6px 12px; /* Smaller padding */
+                    font-size: 14px; /* Smaller font size */
+                    border-radius: 4px; /* Slightly smaller border-radius */
+                }
+
+
+                .btn-info:hover {
+                    background-color: #218838;
+                }
+
+                .btn-warning {
+                    background-color: #ffc107;
+                    color: white;
+                    border: none;
+                    padding: 6px 12px; /* Smaller padding */
+                    border-radius: 4px; /* Slightly smaller border-radius */
+                    font-size: 14px; /* Smaller font size */
+                    text-decoration: none;
+                    display: inline-block;
+                }
+
+                .btn-warning:hover {
+                    background-color: #e0a800;
+                }
+
+                .btn-danger {
+                    background-color: #dc3545;
+                    color: white;
+                    border: none;
+                    padding: 6px 12px; /* Smaller padding */
+                    border-radius: 4px; /* Slightly smaller border-radius */
+                    font-size: 14px; /* Smaller font size */
+                    text-decoration: none;
+                    display: inline-block;
+                }
+
+                .btn-danger:hover {
+                    background-color: #c82333;
+                }
+
+                /* Warna tombol Detail */
+                .btn-info {
+                    background-color: #28a745;
+                    color: white;
+                    border: none;
+                    padding: 6px 16px;
+                    border-radius: 5px;
+                    text-decoration: none;
+                    display: inline-block;
+                }
+
+                .btn-info:hover {
+                    background-color: #218838;
+                }
+                /* Styling Form */
+                .form-container {
+                    margin-bottom: 20px;
+                    padding: 15px;
+                    border-radius: 5px;
+                }
+
+                .form-container input[type="text"] {
+                    width: 40%;
+                    padding: 10px;
+                    margin-bottom: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                }
+
+                .form-container button {
+                    padding: 10px 20px;
+                    background-color: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+
+                .form-container button:hover {
+                    background-color: #0056b3;
+                }
     </style>
 </head>
 <body>

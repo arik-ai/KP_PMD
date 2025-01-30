@@ -14,12 +14,12 @@ if (isset($_GET['id'])) {
     $id = (int) $_GET['id']; // Pastikan ID adalah angka untuk keamanan
 
     // Query hapus data
-    $sql = "DELETE FROM surat_kontrak WHERE id_kontrak = ?";
+    $sql = "DELETE FROM surat_tugas WHERE id_tugas = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Data berhasil dihapus!'); window.location.href='surat_perjanjian_kontrak.php';</script>";
+        echo "<script>alert('Data berhasil dihapus!'); window.location.href='surat_tugas.php';</script>";
     } else {
         echo "Error: " . $conn->error;
     }
@@ -34,7 +34,7 @@ $offset = ($currentPage - 1) * $perPage;
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 
 // Hitung total data
-$totalQuery = "SELECT COUNT(*) AS total FROM surat_kontrak WHERE no_kontrak LIKE ? OR perihal_kontrak LIKE ?";
+$totalQuery = "SELECT COUNT(*) AS total FROM surat_tugas WHERE no_tugas LIKE ? OR perihal_tugas LIKE ?";
 $stmtTotal = $conn->prepare($totalQuery);
 $searchWildcard = "%$searchQuery%";
 $stmtTotal->bind_param("ss", $searchWildcard, $searchWildcard);
@@ -44,7 +44,7 @@ $totalData = $resultTotal->fetch_assoc()['total'];
 $totalPages = ceil($totalData / $perPage);
 
 // Query data dengan limit dan offset
-$sql = "SELECT * FROM surat_kontrak WHERE no_kontrak LIKE ? OR perihal_kontrak LIKE ? LIMIT ? OFFSET ?";
+$sql = "SELECT * FROM surat_tugas WHERE no_tugas LIKE ? OR perihal_tugas LIKE ? LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssii", $searchWildcard, $searchWildcard, $perPage, $offset);
 $stmt->execute();
@@ -267,8 +267,8 @@ $result = $stmt->get_result();
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" ><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
-            <li><a href="surat_perjanjian_kontrak.php" class="active"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
-            <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
+            <li><a href="surat_perjanjian_kontrak.php" ><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_keputusan.php" ><span class="icon">📋</span> Surat Keputusan</a></li>
             <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
@@ -290,15 +290,15 @@ $result = $stmt->get_result();
 
         <!-- Table Content -->
         <div class="container">
-            <h2>Daftar Surat Kontrak</h2>
+            <h2>Daftar Surat tugas</h2>
 
             <!-- Form Pencarian -->
-            <form action="surat_perjanjian_kontrak.php" method="GET" class="search-container">
+            <form action="surat_tugas.php" method="GET" class="search-container">
                 <input type="text" name="search" placeholder="Cari No Surat atau Perihal..." value="<?= htmlspecialchars($searchQuery); ?>" />
                 <button type="submit">Search</button>
             </form>
 
-            <a href="tambah_kontrak.php" class="btn btn-primary">Tambah Surat +</a>
+            <a href="tambah_tugas.php" class="btn btn-primary">Tambah Surat +</a>
             <table class="table">
                 <thead>
                     <tr>
@@ -314,16 +314,16 @@ $result = $stmt->get_result();
                         <?php $no = $offset + 1; while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td><?= $no++; ?></td>
-                                <td><?= htmlspecialchars($row['no_kontrak']); ?></td>
-                                <td><?= htmlspecialchars($row['perihal_kontrak']); ?></td>
-                                <td><?= htmlspecialchars($row['tgl_kontrak']); ?></td>
-                                <td><?php if (empty($row['dokumen_kontrak'])): ?>
-                                     <a href="upload_kontrak.php?id=<?= $row['id_kontrak']; ?>" class="btn btn-primary">Upload</a>
+                                <td><?= htmlspecialchars($row['no_tugas']); ?></td>
+                                <td><?= htmlspecialchars($row['perihal_tugas']); ?></td>
+                                <td><?= htmlspecialchars($row['tgl_tugas']); ?></td>
+                                <td><?php if (empty($row['dokumen_tugas'])): ?>
+                                     <a href="upload_tugas.php?id=<?= $row['id_tugas']; ?>" class="btn btn-primary">Upload</a>
                                     <?php endif; ?></td>
-                                    <td><a href="cetak_kontrak.php?id=<?= $row['id_kontrak']; ?>" class="btn btn-success" target="_blank">Cetak</a></td>
-                                <td><a href="edit_kontrak.php?id=<?= $row['id_kontrak']; ?>" class="btn btn-warning">Edit</a></td>
-                                <td><a href="?id=<?= $row['id_kontrak']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a></td>
-                                <td><a href="detail_kontrak.php?id=<?= $row['id_kontrak']; ?>" class="btn btn-info">Detail</a></td>
+                                    <td><a href="cetak_tugas.php?id=<?= $row['id_tugas']; ?>" class="btn btn-success" target="_blank">Cetak</a></td>
+                                <td><a href="edit_tugas.php?id=<?= $row['id_tugas']; ?>" class="btn btn-warning">Edit</a></td>
+                                <td><a href="?id=<?= $row['id_tugas']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a></td>
+                                <td><a href="detail_tugas.php?id=<?= $row['id_tugas']; ?>" class="btn btn-info">Detail</a></td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>

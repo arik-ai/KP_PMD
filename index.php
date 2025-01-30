@@ -7,6 +7,8 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit;
 }
+// Koneksi ke database
+include 'db.php';
 ?>
 
 <!DOCTYPE html>
@@ -18,10 +20,7 @@ if (!isset($_SESSION['username'])) {
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-        }
+        /* Sidebar styles */
         .sidebar {
             width: 250px;
             height: 100vh;
@@ -29,12 +28,17 @@ if (!isset($_SESSION['username'])) {
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
             position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100; /* Ensure sidebar is above content */
         }
+
         .sidebar h5 {
             font-size: 18px;
             margin-bottom: 30px;
             color: #333;
         }
+
         .sidebar a {
             text-decoration: none;
             color: #333;
@@ -43,70 +47,146 @@ if (!isset($_SESSION['username'])) {
             padding: 10px;
             border-radius: 5px;
         }
+
         .sidebar a.active, .sidebar a:hover {
             background-color: #007bff;
             color: #ffffff;
         }
+
+        /* Content styles */
         .content {
-            margin-left: 270px;
+            margin-left: 270px; /* Account for sidebar width */
             padding: 20px;
             text-align: center;
+            width: calc(100% - 270px); /* Prevent overlap */
+            margin-top: 30px; /* Add space for the topbar */
         }
-        .content h3 {
-            font-size: 30px;
-            font-weight: bold;
+
+        /* Topbar styles */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            z-index: 200; /* Ensure it stays on top */
+        }
+
+        .topbar h2 {
+            font-size: 24px;
             color: #333;
-            margin-bottom: 20px;
-            text-align: center;
+            margin: 0;
         }
-        .content p {
-            font-size: 16px;
-            color: #666;
-            line-height: 1.5;
-            text-align: center;
+
+        .profile {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            font-size: 14px;
         }
-        /* CSS untuk Administrasi */
-        .card.administrasi {
-            background-color: white;
-            border: 50px solidrgb(255, 255, 255);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%; /* Membuat tinggi sama dengan kontainer */
+
+        /* Right sidebar styles */
+        .right-sidebar {
             width: 300px;
-            margin-bottom: 10px; /* Menambahkan margin ke bawah untuk memisahkan card */
+            position: fixed;
+            right: 0;
+            background-color: #ffffff;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+            padding-top: 20px; /* Adjust for the header in right sidebar */
         }
 
-        .card.administrasi, .card.inventaris {
-            background-color: white;
-            border: 50px solidrgb(255, 255, 255);
+        /* Agenda container styles */
+        .agenda-container {
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .agenda-header {
+            background-color: rgb(148, 181, 211);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 1.2rem;
+        }
+
+        .agenda-item {
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100%;
-            width: 300px;
-            margin: 0 auto; /* Menengah card ke tengah */
-            margin-bottom: 10px; /* Menambahkan margin ke bawah untuk memisahkan card */
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
         }
 
-        .card.administrasi img, .card.inventaris img {
-            width: 60%;
-            max-height: 150px;
-            margin: 0 auto;
+        .agenda-item:last-child {
+            border-bottom: none;
         }
 
-        .card.administrasi .card-title, .card.inventaris .card-title {
-            color: black;
+        .agenda-icon {
+            font-size: 1.2rem;
             font-weight: bold;
+            text-align: center;
+            border-radius: 5px;
+            padding: 10px;
+            margin-right: 10px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-
-        .hidden {
-            display: none;
+        .agenda-icon.past {
+            background-color: #ddd;
+            color: #888;
         }
+
+        .agenda-icon.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .agenda-icon.default {
+            background-color: rgb(155, 199, 253);
+            color: white;
+        }
+
+        .agenda-details {
+            flex: 1;
+        }
+
+        .agenda-date {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .agenda-perihal {
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            font-size: 1rem;
+            color: #777;
+        }
+
+        /* Footer styles */
         footer {
-            margin-top: 240px;
-            margin-left: 0px;
+            margin-top: 30px; /* Ensure footer is spaced from content */
+            text-align: center;
+            padding: 10px;
+            background-color: #f8f9fa;
             font-size: 14px;
             color: #555;
         }
@@ -122,28 +202,85 @@ if (!isset($_SESSION['username'])) {
             <li><a href="logout.php"><span class="icon">🔒</span> LOGOUT</a></li>
         </ul>
     </div>
-    <div class="main-content">
-        <!-- Topbar -->
-        <div class="topbar">
-            <h2>DINAS PEMBERDAYAAN MASYARAKAT DAN DESA</h2>
-            <div class="profile">
-                <span><?= htmlspecialchars($_SESSION['role']); ?></span>
-                <div class="profile-icon">👤</div>
+    <div class="right-sidebar">
+        <!-- Agenda Surat Masuk -->
+        <div class="agenda-container">
+            <div class="agenda-header">Agenda Surat Masuk</div>
+            <div class="agenda-list">
+                <?php
+                $query = "SELECT agenda, perihal FROM surat_masuk WHERE agenda IS NOT NULL AND agenda != '0000-00-00' ORDER BY agenda ASC";
+                $result = mysqli_query($conn, $query);
+                $today = date('Y-m-d');
+
+                if (mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $agenda_date = $row['agenda'];
+                        $tanggal = date('d', strtotime($agenda_date));
+                        $bulan = date('F', strtotime($agenda_date));
+
+                        $icon_class = "default";
+                        $item_class = "";
+
+                        if ($agenda_date < $today) {
+                            $icon_class = "past";
+                            $item_class = "past";
+                        } elseif ($agenda_date == $today) {
+                            $icon_class = "active";
+                            $item_class = "active";
+                        }
+
+                        echo '<div class="agenda-item ' . $item_class . '">';
+                        echo '<div class="agenda-icon ' . $icon_class . '">' . htmlspecialchars($tanggal) . '</div>';
+                        echo '<div class="agenda-details">';
+                        echo '<div class="agenda-date">' . htmlspecialchars($bulan) . '</div>';
+                        echo '<div class="agenda-perihal">' . htmlspecialchars($row['perihal']) . '</div>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo '<div class="empty-state">Belum ada agenda untuk surat masuk.</div>';
+                }
+                ?>
             </div>
         </div>
-    </div>
-    <div class="content">
-        <!-- Dashboard Content -->
-        <div id="dashboard-content">
-            <h3>Selamat Datang di Sistem Administrasi dan Inventori</h3>
-            
+
+        <!-- Agenda Surat Perjanjian Kontrak -->
+        <div class="agenda-container">
+            <div class="agenda-header">Agenda Surat Perjanjian Kontrak</div>
+            <div class="agenda-list">
+                <?php
+                $query = "SELECT agenda_kontrak, perihal_kontrak FROM surat_kontrak WHERE agenda_kontrak IS NOT NULL AND agenda_kontrak != '0000-00-00' ORDER BY agenda_kontrak ASC";
+                $result = mysqli_query($conn, $query);
+
+                if (mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $agenda_date = $row['agenda_kontrak'];
+                        $tanggal = date('d', strtotime($agenda_date));
+                        $bulan = date('F', strtotime($agenda_date));
+
+                        $icon_class = "default";
+                        $item_class = "";
+
+                        if ($agenda_date < $today) {
+                            $icon_class = "past";
+                            $item_class = "past";
+                        } elseif ($agenda_date == $today) {
+                            $icon_class = "active";
+                            $item_class = "active";
+                        }
+
+                        echo '<div class="agenda-item ' . $item_class . '">';
+                        echo '<div class="agenda-icon ' . $icon_class . '">' . htmlspecialchars($tanggal) . '</div>';
+                        echo '<div class="agenda-details">';
+                        echo '<div class="agenda-date">' . htmlspecialchars($bulan) . '</div>';
+                        echo '<div class="agenda-perihal">' . htmlspecialchars($row['perihal_kontrak']) . '</div>';
+                        echo '</div>';
+                        echo '</div>';  
+                    }
+                } else {
+                    echo '<div class="empty-state">Belum ada agenda untuk surat perjanjian kontrak.</div>';
+                }
+                ?>
             </div>
-
-
-
-            <footer>
-                <p>https://dpmd.pamekasankab.go.id/</p>
-            </footer>
-        </div>
 </body>
 </html>

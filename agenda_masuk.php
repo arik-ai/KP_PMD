@@ -20,7 +20,7 @@ include 'db.php';
     <link rel="stylesheet" href="style.css">
     <style>
         .agenda-container {
-            max-width: 800px;
+            max-width: 300px;
             margin: 0 auto;
             background: #ffffff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -29,7 +29,7 @@ include 'db.php';
         }
 
         .agenda-header {
-            background-color: #4CAF50;
+            background-color: rgb(148, 181, 211);
             color: white;
             text-align: center;
             padding: 10px;
@@ -48,8 +48,6 @@ include 'db.php';
         }
 
         .agenda-icon {
-            background-color: #b71c1c;
-            color: white;
             font-size: 1.2rem;
             font-weight: bold;
             text-align: center;
@@ -61,6 +59,21 @@ include 'db.php';
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .agenda-icon.past {
+            background-color: #ddd;
+            color: #888;
+        }
+
+        .agenda-icon.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .agenda-icon.default {
+            background-color:rgb(155, 199, 253);
+            color: white;
         }
 
         .agenda-details {
@@ -85,7 +98,15 @@ include 'db.php';
             font-size: 1rem;
             color: #777;
         }
-        
+
+        .agenda-item.past {
+            background-color: #f5f5f5;
+            color: #aaa;
+        }
+
+        .agenda-item.active {
+            background-color: #e8f5e9;
+        }
     </style>
 </head>
 <body>
@@ -115,20 +136,32 @@ include 'db.php';
         </div>
 
         <div class="agenda-container">
-            <div class="agenda-header">Pengingat Agenda</div>
+            <div class="agenda-header">Agenda Surat Masuk</div>
             <div class="agenda-list">
                 <?php
-                // Query untuk mengambil data agenda dan perihal dari tabel surat_masuk
                 $query = "SELECT agenda, perihal FROM surat_masuk WHERE agenda IS NOT NULL AND agenda != '0000-00-00' ORDER BY agenda ASC";
                 $result = mysqli_query($conn, $query);
+                $today = date('Y-m-d');
 
-                // Periksa apakah ada data
                 if (mysqli_num_rows($result) > 0) {
                     while ($row = mysqli_fetch_assoc($result)) {
-                        $tanggal = date('d', strtotime($row['agenda']));
-                        $bulan = date('F', strtotime($row['agenda']));
-                        echo '<div class="agenda-item">';
-                        echo '<div class="agenda-icon">' . htmlspecialchars($tanggal) . '</div>';
+                        $agenda_date = $row['agenda'];
+                        $tanggal = date('d', strtotime($agenda_date));
+                        $bulan = date('F', strtotime($agenda_date));
+
+                        $icon_class = "default";
+                        $item_class = "";
+
+                        if ($agenda_date < $today) {
+                            $icon_class = "past";
+                            $item_class = "past";
+                        } elseif ($agenda_date == $today) {
+                            $icon_class = "active";
+                            $item_class = "active";
+                        }
+
+                        echo '<div class="agenda-item ' . $item_class . '">';
+                        echo '<div class="agenda-icon ' . $icon_class . '">' . htmlspecialchars($tanggal) . '</div>';
                         echo '<div class="agenda-details">';
                         echo '<div class="agenda-date">' . htmlspecialchars($bulan) . '</div>';
                         echo '<div class="agenda-perihal">' . htmlspecialchars($row['perihal']) . '</div>';
@@ -136,11 +169,47 @@ include 'db.php';
                         echo '</div>';
                     }
                 } else {
-                    echo '<div class="empty-state">Belum ada agenda yang akan dilaksanakan.</div>';
+                    echo '<div class="empty-state">Belum ada agenda untuk surat masuk.</div>';
                 }
+                ?>
+            </div>
+        </div>
 
-                // Tutup koneksi database
-                mysqli_close($conn);
+        <div class="agenda-container">
+            <div class="agenda-header">Agenda Surat Perjanjian Kontrak</div>
+            <div class="agenda-list">
+                <?php
+                $query = "SELECT agenda_kontrak, perihal_kontrak FROM surat_kontrak WHERE agenda_kontrak IS NOT NULL AND agenda_kontrak != '0000-00-00' ORDER BY agenda_kontrak ASC";
+                $result = mysqli_query($conn, $query);
+
+                if (mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $agenda_date = $row['agenda_kontrak'];
+                        $tanggal = date('d', strtotime($agenda_date));
+                        $bulan = date('F', strtotime($agenda_date));
+
+                        $icon_class = "default";
+                        $item_class = "";
+
+                        if ($agenda_date < $today) {
+                            $icon_class = "past";
+                            $item_class = "past";
+                        } elseif ($agenda_date == $today) {
+                            $icon_class = "active";
+                            $item_class = "active";
+                        }
+
+                        echo '<div class="agenda-item ' . $item_class . '">';
+                        echo '<div class="agenda-icon ' . $icon_class . '">' . htmlspecialchars($tanggal) . '</div>';
+                        echo '<div class="agenda-details">';
+                        echo '<div class="agenda-date">' . htmlspecialchars($bulan) . '</div>';
+                        echo '<div class="agenda-perihal">' . htmlspecialchars($row['perihal_kontrak']) . '</div>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo '<div class="empty-state">Belum ada agenda untuk surat perjanjian kontrak.</div>';
+                }
                 ?>
             </div>
         </div>

@@ -89,6 +89,12 @@
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" class="active"><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
+            <li><a href="surat_perjanjian_kontrak.php" ><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
+            <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
+            <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
+            <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
+            <li><a href="data_master.php"><span class="icon">⚙️</span> Data Master</a></li>
             <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
         </ul>
     </div>
@@ -97,7 +103,7 @@
         <div class="topbar">
             <h2>Administrasi</h2>
             <div class="profile">
-                <span><?= htmlspecialchars($_SESSION['username']); ?> (<?= htmlspecialchars($_SESSION['role']); ?>)</span>
+                <span><?= htmlspecialchars($_SESSION['role']); ?></span>
                 <div class="profile-icon">👤</div>
             </div>
         </div>

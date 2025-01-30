@@ -12,27 +12,27 @@ include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ambil data dari form
-    $no_kontrak_input = mysqli_real_escape_string($conn, $_POST['no_kontrak']);
-    $perihal_kontrak = mysqli_real_escape_string($conn, $_POST['perihal_kontrak']);
-    $tgl_kontrak = mysqli_real_escape_string($conn, $_POST['tgl_kontrak']);
-    $agenda_kontrak = mysqli_real_escape_string($conn, $_POST['agenda_kontrak']);
-    $kontrak_input = $_SESSION['id']; // Dapatkan user ID dari session
+    $no_tugas_input = mysqli_real_escape_string($conn, $_POST['no_tugas']);
+    $perihal_tugas = mysqli_real_escape_string($conn, $_POST['perihal_tugas']);
+    $tgl_tugas = mysqli_real_escape_string($conn, $_POST['tgl_tugas']);
+    $agenda_tugas = mysqli_real_escape_string($conn, $_POST['agenda_tugas']);
+    $tugas_input = $_SESSION['id']; // Dapatkan user ID dari session
 
     // Ambil tahun dari tanggal surat
-    $tahun = date('Y', strtotime($tgl_kontrak));
+    $tahun = date('Y', strtotime($tgl_tugas));
     
     // Tentukan kode dinas PMD secara otomatis
     $kode_dinas = '432.312'; 
 
     // Gabungkan nomor kontrak yang diinput dengan kode dinas dan tahun
-    $no_kontrak = $no_kontrak_input . '/' . $kode_dinas . '/' . $tahun;
+    $no_tugas = $no_tugas_input . '/' . $kode_dinas . '/' . $tahun;
 
-    // Query untuk menyimpan data ke tabel surat_kontrak
-    $query = "INSERT INTO surat_kontrak (no_kontrak, perihal_kontrak, tgl_kontrak, agenda_kontrak, kontrak_input) 
-              VALUES ('$no_kontrak', '$perihal_kontrak', '$tgl_kontrak', '$agenda_kontrak', '$kontrak_input')";
+    // Query untuk menyimpan data ke tabel surat_tugas
+    $query = "INSERT INTO surat_tugas (no_tugas, perihal_tugas, tgl_tugas, agenda_tugas, tugas_input) 
+              VALUES ('$no_tugas', '$perihal_tugas', '$tgl_tugas', '$agenda_tugas', '$tugas_input')";
 
     if (mysqli_query($conn, $query)) {
-        echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='surat_perjanjian_kontrak.php';</script>";
+        echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='surat_tugas.php';</script>";
     } else {
         echo "Error: " . $query . "<br>" . mysqli_error($conn);
     }
@@ -48,8 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="style.css">
     <script>
         function generateNoKontrak() {
-            var kodeSurat = document.getElementById("no_kontrak").value; // Ambil kode surat
-            var tanggal = document.getElementById("tgl_kontrak").value; // Ambil tanggal surat
+            var kodeSurat = document.getElementById("no_tugas").value; // Ambil kode surat
+            var tanggal = document.getElementById("tgl_tugas").value; // Ambil tanggal surat
             if (tanggal) {
                 var date = new Date(tanggal);
                 var tahun = date.getFullYear(); // Ambil tahun dari tanggal
@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Gabungkan menjadi format lengkap
                 var noKontrak = kodeSurat + '/' + kodeDinas + '/' + tahun;
-                document.getElementById("no_kontrak_full").value = noKontrak; // Tampilkan hasil di input tersembunyi
+                document.getElementById("no_tugas_full").value = noKontrak; // Tampilkan hasil di input tersembunyi
             }
         }
     </script>
@@ -71,9 +71,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" ><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
-            <li><a href="surat_perjanjian_kontrak.php" class="active"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_perjanjian_kontrak.php" ><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
             <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
-            <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
+            <li><a href="surat_tugas.php"  class="active"><span class="icon">📄</span> Surat Tugas</a></li>
             <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
             <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
             <li><a href="data_master.php"><span class="icon">⚙️</span> Data Master</a></li>
@@ -91,35 +91,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <div class="container">
-            <h2>Tambah Surat Perjanjian Kontrak</h2>
+            <h2>Tambah Surat Tugas</h2>
             <form action="" method="post" class="form-container">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="no_kontrak">No Surat</label>
-                        <input type="text" id="no_kontrak" name="no_kontrak" placeholder="Input no surat masuk" required oninput="generateNoKontrak()">
+                        <label for="no_tugas">No Surat</label>
+                        <input type="text" id="no_tugas" name="no_tugas" placeholder="Input no surat masuk" required oninput="generateNoKontrak()">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="perihal_kontrak">Perihal</label>
-                        <input type="text" id="perihal_kontrak" name="perihal_kontrak" placeholder="Input Perihal/keterangan surat" required>
+                        <label for="perihal_tugas">Perihal</label>
+                        <input type="text" id="perihal_tugas" name="perihal_tugas" placeholder="Input Perihal/keterangan surat" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="tgl_kontrak">Tanggal Surat</label>
-                        <input type="date" id="tgl_kontrak" name="tgl_kontrak" required oninput="generateNoKontrak()">
+                        <label for="tgl_tugas">Tanggal Surat</label>
+                        <input type="date" id="tgl_tugas" name="tgl_tugas" required oninput="generateNoKontrak()">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="agenda_kontrak">Tanggal Agenda (Tidak wajib)</label>
-                        <input type="date" id="agenda_kontrak" name="agenda_kontrak">
+                        <label for="agenda_tugas">Tanggal Agenda (Tidak wajib)</label>
+                        <input type="date" id="agenda_tugas" name="agenda_tugas">
                     </div>
                 </div>
 
                 <!-- Input tersembunyi untuk menyimpan nomor surat lengkap -->
-                <input type="hidden" id="no_kontrak_full" name="no_kontrak_full">
+                <input type="hidden" id="no_tugas_full" name="no_tugas_full">
 
                 <div class="form-row">
                     <button type="submit" class="btn btn-primary">Tambah Surat</button>
