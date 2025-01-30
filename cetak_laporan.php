@@ -12,6 +12,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+
 // Default tahun
 $tahun = isset($_GET['tahun']) ? $_GET['tahun'] : date("Y");
 
@@ -40,12 +41,18 @@ $sqlKeputusan = "SELECT MONTH(tgl_keputusan) AS bulan, COUNT(*) AS jumlah
                WHERE YEAR(tgl_keputusan) = $tahun 
                GROUP BY bulan";
 $resultKeputusan = $conn->query($sqlKeputusan);
+$sqlTugas = "SELECT MONTH(tgl_tugas) AS bulan, COUNT(*) AS jumlah 
+               FROM surat_tugas 
+               WHERE YEAR(tgl_tugas) = $tahun 
+               GROUP BY bulan";
+$resultTugas = $conn->query($sqlTugas);
 
 // Membuat data JSON untuk chart
 $dataMasuk = array_fill(1, 12, 0); // Inisialisasi data kosong untuk 12 bulan
 $dataKeluar = array_fill(1, 12, 0);
 $dataKontrak = array_fill(1, 12, 0);
 $dataKeputusan = array_fill(1, 12, 0); 
+$dataTugas = array_fill(1, 12, 0); 
 if ($resultMasuk->num_rows > 0) {
     while ($row = $resultMasuk->fetch_assoc()) {
         $dataMasuk[$row['bulan']] = $row['jumlah'];
@@ -68,6 +75,11 @@ if ($resultKeputusan->num_rows > 0) {
         $dataKeputusan[$row['bulan']] = $row['jumlah'];
     }
 }
+if ($resultTugas->num_rows > 0) {
+    while ($row = $resultTugas->fetch_assoc()) {
+        $dataTugas[$row['bulan']] = $row['jumlah'];
+    }
+}
 
 
 // Menghitung total surat masuk, keluar, dan kontrak
@@ -75,8 +87,9 @@ $totalMasuk = array_sum($dataMasuk);
 $totalKeluar = array_sum($dataKeluar);
 $totalKontrak = array_sum($dataKontrak);
 $totalKeputusan = array_sum($dataKeputusan);
-$totalSemua = $totalMasuk + $totalKeluar + $totalKontrak + $totalKeputusan;
-// Template untuk PDF
+$totalTugas = array_sum($dataTugas);
+$totalSemua = $totalMasuk + $totalKeluar + $totalKontrak + $totalKeputusan + $totalTugas;
+
 $html = "
 <!DOCTYPE html>
 <html>
@@ -118,6 +131,7 @@ $html = "
                 <th>Surat Keluar</th>
                 <th>Surat Perjanjian Kontrak</th>
                 <th>Surat Keputusan</th>
+                <th>Surat Tugas</th>
             </tr>
         </thead>
         <tbody>";
@@ -136,6 +150,7 @@ foreach ($bulan as $key => $namaBulan) {
                 <td>{$dataKeluar[$key]}</td>
                 <td>{$dataKeluar[$key]}</td>
                 <td>{$dataKeputusan[$key]}</td>
+                <td>{$dataTugas[$key]}</td>
               </tr>";
 }
 
@@ -146,6 +161,7 @@ $html .= "
                 <td><strong>$totalKeluar</strong></td>
                 <td><strong>$totalKontrak</strong></td>
                 <td><strong>$totalKeputusan</strong></td>
+                <td><strong>$totalTugas</strong></td>
 
             </tr>
         </tbody>

@@ -38,12 +38,18 @@ $sqlKeputusan = "SELECT MONTH(tgl_keputusan) AS bulan, COUNT(*) AS jumlah
                WHERE YEAR(tgl_keputusan) = $tahun 
                GROUP BY bulan";
 $resultKeputusan = $conn->query($sqlKeputusan);
+$sqlTugas = "SELECT MONTH(tgl_tugas) AS bulan, COUNT(*) AS jumlah 
+               FROM surat_tugas 
+               WHERE YEAR(tgl_tugas) = $tahun 
+               GROUP BY bulan";
+$resultTugas = $conn->query($sqlTugas);
 
 // Membuat data JSON untuk chart
 $dataMasuk = array_fill(1, 12, 0); // Inisialisasi data kosong untuk 12 bulan
 $dataKeluar = array_fill(1, 12, 0);
 $dataKontrak = array_fill(1, 12, 0);
 $dataKeputusan = array_fill(1, 12, 0); 
+$dataTugas = array_fill(1, 12, 0); 
 if ($resultMasuk->num_rows > 0) {
     while ($row = $resultMasuk->fetch_assoc()) {
         $dataMasuk[$row['bulan']] = $row['jumlah'];
@@ -66,6 +72,11 @@ if ($resultKeputusan->num_rows > 0) {
         $dataKeputusan[$row['bulan']] = $row['jumlah'];
     }
 }
+if ($resultTugas->num_rows > 0) {
+    while ($row = $resultTugas->fetch_assoc()) {
+        $dataTugas[$row['bulan']] = $row['jumlah'];
+    }
+}
 
 // Query untuk mendapatkan daftar tahun (untuk dropdown)
 $sqlTahun = "SELECT DISTINCT YEAR(tgl_surat) AS tahun FROM surat_masuk 
@@ -75,6 +86,8 @@ $sqlTahun = "SELECT DISTINCT YEAR(tgl_surat) AS tahun FROM surat_masuk
              SELECT DISTINCT YEAR(tgl_kontrak) AS tahun FROM surat_kontrak
              UNION
              SELECT DISTINCT YEAR(tgl_keputusan) AS tahun FROM surat_keputusan
+             UNION
+             SELECT DISTINCT YEAR(tgl_tugas) AS tahun FROM surat_tugas
              ORDER BY tahun";
 $resultTahun = $conn->query($sqlTahun);
 
@@ -90,7 +103,9 @@ $totalMasuk = array_sum($dataMasuk);
 $totalKeluar = array_sum($dataKeluar);
 $totalKontrak = array_sum($dataKontrak);
 $totalKeputusan = array_sum($dataKeputusan);
-$totalSemua = $totalMasuk + $totalKeluar + $totalKontrak + $totalKeputusan;
+$totalTugas = array_sum($dataTugas);
+$totalSemua = $totalMasuk + $totalKeluar + $totalKontrak + $totalKeputusan + $totalTugas;
+
 ?>
 
 <!DOCTYPE html>
@@ -189,6 +204,7 @@ $totalSemua = $totalMasuk + $totalKeluar + $totalKontrak + $totalKeputusan;
             const dataKeluar = <?php echo json_encode(array_values($dataKeluar)); ?>;
             const dataKontrak = <?php echo json_encode(array_values($dataKontrak)); ?>;
             const dataKeputusan = <?php echo json_encode(array_values($dataKeputusan)); ?>;
+            const dataTugas = <?php echo json_encode(array_values($dataTugas)); ?>;
 
 
             const labels = [
@@ -228,6 +244,13 @@ $totalSemua = $totalMasuk + $totalKeluar + $totalKontrak + $totalKeputusan;
                             data: dataKeputusan,
                             backgroundColor: 'rgba(150, 233, 16, 0.2)',
                             borderColor: 'rgb(220, 233, 76)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Surat Tugas',
+                            data: dataTugas,
+                            backgroundColor: 'rgba(0, 255, 85, 0.2)',
+                            borderColor: 'rgb(121, 236, 111)',
                             borderWidth: 1
                         }
                     ]
@@ -276,6 +299,10 @@ $totalSemua = $totalMasuk + $totalKeluar + $totalKontrak + $totalKeputusan;
                 <tr>
                     <td>Surat Keputusan</td>
                     <td><?= $totalKeputusan ?></td>
+                </tr>
+                <tr>
+                    <td>Surat Tugas</td>
+                    <td><?= $totalTugas ?></td>
                 </tr>
                 <tr>
                     <td><strong>Total Surat</strong></td>
