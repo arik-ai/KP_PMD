@@ -18,6 +18,21 @@ $totalMasuk = $resultMasuk->fetch_assoc()['total_masuk'];
 $sqlSuratKeluar = "SELECT COUNT(*) AS total_keluar FROM surat_keluar";
 $resultKeluar = $conn->query($sqlSuratKeluar);
 $totalKeluar = $resultKeluar->fetch_assoc()['total_keluar'];
+
+// Query untuk menghitung jumlah surat perjanjian kontrak
+$sqlSuratKontrak = "SELECT COUNT(*) AS total_kontrak FROM surat_kontrak";
+$resultKontrak = $conn->query($sqlSuratKontrak);
+$totalKontrak = $resultKontrak->fetch_assoc()['total_kontrak'];
+
+// Query untuk menghitung jumlah surat keputusan
+$sqlSuratKeputusan = "SELECT COUNT(*) AS total_keputusan FROM surat_keputusan";
+$resultKeputusan = $conn->query($sqlSuratKeputusan);
+$totalKeputusan = $resultKeputusan->fetch_assoc()['total_keputusan'];
+
+// Query untuk menghitung jumlah surat tugas
+$sqlSuratTugas = "SELECT COUNT(*) AS total_tugas FROM surat_tugas";
+$resultTugas = $conn->query($sqlSuratTugas);
+$totalTugas = $resultTugas->fetch_assoc()['total_tugas'];
 ?>
 
 <!DOCTYPE html>
@@ -134,6 +149,20 @@ $totalKeluar = $resultKeluar->fetch_assoc()['total_keluar'];
                 <div class="card" onclick="window.location.href='arsip_keluar.php'">
                     <h5>Jumlah Surat Keluar</h5>
                     <p><?= $totalKeluar; ?> surat</p>
+                </div>
+                <div class="card" onclick="window.location.href='arsip_kontrak.php'">
+                    <h5>Jumlah Surat Perjanjian Kontrak</h5>
+                    <p><?= $totalKontrak; ?> surat</p>
+                </div>
+            </div>
+            <div class="row" style="justify-content: center;">
+                <div class="card" onclick="window.location.href='arsip_keputusan.php'">
+                    <h5>Jumlah Surat Keputusan</h5>
+                    <p><?= $totalKeputusan; ?> surat</p>
+                </div>
+                <div class="card" onclick="window.location.href='arsip_tugas.php'">
+                    <h5>Jumlah Surat Tugas</h5>
+                    <p><?= $totalTugas; ?> surat</p>
                 </div>
             </div>
         </div>

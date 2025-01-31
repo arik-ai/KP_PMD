@@ -38,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_surat = $_POST['id_surat'];
     $nomor_surat = mysqli_real_escape_string($conn, $_POST['nomor_surat']);
     $tgl_surat = mysqli_real_escape_string($conn, $_POST['tgl_surat']);
+    $agenda = mysqli_real_escape_string($conn, $_POST['agenda']);
     $perihal = mysqli_real_escape_string($conn, $_POST['perihal']);
     $pengirim = mysqli_real_escape_string($conn, $_POST['pengirim']);
     $terima_tanggal = mysqli_real_escape_string($conn, $_POST['terima_tanggal']);
@@ -63,7 +64,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Query untuk update data
     $query = "UPDATE surat_masuk SET 
         nomor_surat = '$nomor_surat', 
-        tgl_surat = '$tgl_surat', 
+        tgl_surat = '$tgl_surat',
+        agenda = '$agenda',
         perihal = '$perihal', 
         pengirim = '$pengirim', 
         terima_tanggal = '$terima_tanggal', 
@@ -131,6 +133,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="form-group">
                         <label for="tgl_surat">Tanggal Surat</label>
                         <input type="date" id="tgl_surat" name="tgl_surat" value="<?= htmlspecialchars($data['tgl_surat']); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tgl_surat">Agenda Surat</label>
+                        <input type="date" id="agenda" name="agenda" value="<?= htmlspecialchars($data['agenda']); ?>" >
                     </div>
                 </div>
                 <div class="form-row">

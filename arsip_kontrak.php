@@ -7,19 +7,19 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-include 'db.php';
+include 'db.php'; // Include the database connection
 
 // Proses hapus data jika ada parameter `id`
 if (isset($_GET['id'])) {
-    $id = (int) $_GET['id'];
+    $id = (int) $_GET['id']; 
 
     // Query hapus data
-    $sql = "DELETE FROM surat_masuk WHERE id_surat = ?";
+    $sql = "DELETE FROM surat_kontrak WHERE id_kontrak = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Data berhasil dihapus!'); window.location.href='surat_masuk.php';</script>";
+        echo "<script>alert('Data berhasil dihapus!'); window.location.href='surat_perjanjian_kontrak.php';</script>";
     } else {
         echo "Error: " . $conn->error;
     }
@@ -30,7 +30,7 @@ $perPage = 10;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($currentPage - 1) * $perPage;
 
-// Mendapatkan nilai pencarian dan filter tahun/bulan dari URL jika ada
+// Mendapatkan nilai pencarian dari URL jika ada
 $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 $filterYear = isset($_GET['year']) ? (int)$_GET['year'] : '';
 $filterMonth = isset($_GET['month']) ? (int)$_GET['month'] : '';
@@ -40,48 +40,65 @@ $conditions = "";
 $params = [];
 $paramTypes = "";
 
+// Pastikan $searchWildcard selalu ada
+$searchWildcard = "%$searchQuery%";
+
+// Tentukan kondisi pencarian jika ada
 if ($searchQuery !== '') {
-    $conditions .= "(nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR nama_sifat_surat LIKE ?)";
-    $searchWildcard = "%$searchQuery%";
-    array_push($params, $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard);
-    $paramTypes .= "ssss";
+    $conditions .= "(no_kontrak LIKE ? OR perihal_kontrak LIKE ?)";
+    array_push($params, $searchWildcard, $searchWildcard);
+    $paramTypes .= "ss"; // tipe untuk search
 }
 
 if ($filterYear) {
     if ($conditions !== "") $conditions .= " AND ";
-    $conditions .= "YEAR(tgl_surat) = ?";
+    $conditions .= "YEAR(tgl_kontrak) = ?";
     array_push($params, $filterYear);
-    $paramTypes .= "i";
+    $paramTypes .= "i"; // tipe untuk tahun
 }
 
 if ($filterMonth) {
     if ($conditions !== "") $conditions .= " AND ";
-    $conditions .= "MONTH(tgl_surat) = ?";
+    $conditions .= "MONTH(tgl_kontrak) = ?";
     array_push($params, $filterMonth);
-    $paramTypes .= "i";
+    $paramTypes .= "i"; // tipe untuk bulan
 }
 
 if ($conditions === "") {
-    $conditions = "1";
+    $conditions = "1"; // kondisi jika tidak ada filter
 }
 
 // Hitung total data
-$totalQuery = "SELECT COUNT(*) AS total FROM surat_masuk WHERE $conditions";
+$totalQuery = "SELECT COUNT(*) AS total FROM surat_kontrak WHERE (no_kontrak LIKE ? OR perihal_kontrak LIKE ?) AND $conditions";
 $stmtTotal = $conn->prepare($totalQuery);
-if (!empty($params)) {
-    $stmtTotal->bind_param($paramTypes, ...$params);
-}
+
+// Gabungkan parameter pencarian dengan parameter lainnya
+$paramsTotal = array_merge([$searchWildcard, $searchWildcard], $params);
+
+// Menentukan tipe parameter untuk total data
+$totalParamTypes = "ss" . $paramTypes;
+
+// Bind parameter untuk total data
+$stmtTotal->bind_param($totalParamTypes, ...$paramsTotal);
 $stmtTotal->execute();
 $resultTotal = $stmtTotal->get_result();
 $totalData = $resultTotal->fetch_assoc()['total'];
 $totalPages = ceil($totalData / $perPage);
 
 // Query data dengan limit dan offset
-$sql = "SELECT * FROM surat_masuk WHERE $conditions LIMIT ? OFFSET ?";
+$sql = "SELECT * FROM surat_kontrak WHERE (no_kontrak LIKE ? OR perihal_kontrak LIKE ?) AND $conditions LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($sql);
-array_push($params, $perPage, $offset);
-$paramTypes .= "ii";
-$stmt->bind_param($paramTypes, ...$params);
+
+// parameter pencarian dengan parameter lainnya
+$paramsData = array_merge([$searchWildcard, $searchWildcard], $params);
+$paramsData[] = $perPage; 
+$paramsData[] = $offset;  
+
+// Menentukan tipe parameter untuk data
+$dataParamTypes = "ss" . $paramTypes . "ii";
+
+// Bind parameter untuk data
+$stmt->bind_param($dataParamTypes, ...$paramsData);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -131,24 +148,6 @@ $result = $stmt->get_result();
             background-color: #0056b3;
         }
 
-        .export-buttons {
-            margin-top: 20px;
-        }
-
-        .export-buttons a {
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-
-        .export-buttons a:hover {
-            background-color: #218838;
-        }
-
         .pagination {
             display: flex;
             justify-content: center;
@@ -194,60 +193,112 @@ $result = $stmt->get_result();
         .pagination .disabled {
             pointer-events: none;
         }
-                    
-                        .table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    text-align: center; 
-                }
 
-                .table th, .table td {
-                    padding: 4px; 
-                    text-align: center;
-                    border: 1px solid #ddd;
-                }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
 
-                .table th {
-                    background-color: #e6f7ff;
-                    font-weight: bold;
-                }
+        .table th, .table td {
+            padding: 4px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
 
-                .table th, .table td {
-                    vertical-align: middle; 
-                }
+        .table th {
+            background-color: #e6f7ff;
+            font-weight: bold;
+        }
 
-              
-                .table th:nth-child(1), .table td:nth-child(1) {
-                    width: 5%;
-                }
+        .table th, .table td {
+            vertical-align: middle;
+        }
 
-                .table th:nth-child(2), .table td:nth-child(2) {
-                    width: 20%;
-                }
+        .table th:nth-child(1), .table td:nth-child(1) {
+            width: 5%;
+        }
 
-                .table th:nth-child(3), .table td:nth-child(3) {
-                    width: 20%;
-                }
+        .table th:nth-child(2), .table td:nth-child(2) {
+            width: 20%;
+        }
 
-                .table th:nth-child(4), .table td:nth-child(4) {
-                    width: 15%;
-                }
+        .table th:nth-child(3), .table td:nth-child(3) {
+            width: 20%;
+        }
 
-                .table th:nth-child(5), .table td:nth-child(5) {
-                    width: 15%;
-                }
+        .table th:nth-child(4), .table td:nth-child(4) {
+            width: 15%;
+        }
 
-                .table th:nth-child(6), .table td:nth-child(6) {
-                    width: 15%;
-                }
+        .table th:nth-child(5), .table td:nth-child(5) {
+            width: 40%;
+        }
 
-                .table th:nth-child(7), .table td:nth-child(7) {
-                    width: 10%;
-                }
+        .btn {
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
 
-                .table th:nth-child(8), .table td:nth-child(8) {
-                    width: 40%;
-                }
+        .btn-info:hover {
+            background-color: #218838;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: rgb(89, 83, 84);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-info {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-info:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -260,7 +311,7 @@ $result = $stmt->get_result();
             <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
             <li><a href="surat_masuk.php" ><span class="icon">📂</span> Data Surat Masuk</a></li>
             <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
-            <li><a href="surat_perjanjian_kontrak.php"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_perjanjian_kontrak.php" ><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
             <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
             <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
             <li><a href="arsip.php" class="active"><span class="icon">📚</span> Arsip Surat</a></li>
@@ -283,9 +334,10 @@ $result = $stmt->get_result();
 
         <!-- Table Content -->
         <div class="container">
-            <h2>Arsip Surat Masuk</h2>
+            <h2>Daftar Surat Kontrak</h2>
+
             <div class="search-bar">
-                <form action="arsip_masuk.php" method="GET">
+                <form action="arsip_kontrak.php" method="GET">
                     <input type="text" name="search" placeholder="Pencarian" value="<?= htmlspecialchars($searchQuery); ?>" />
                     <button class="search-button" type="submit">Search</button> <!-- Tombol Search -->
                     <select name="year">
@@ -311,10 +363,7 @@ $result = $stmt->get_result();
                         <th>No</th>
                         <th>No. Surat</th>
                         <th>Perihal</th>
-                        <th>Tanggal Surat</th>
-                        <th>Diterima Tanggal</th>
-                        <th>Instansi Pengirim</th>
-                        <th>Surat</th>
+                        <th>Tanggal</th>
                         <th>Dokumen</th>
                     </tr>
                 </thead>
@@ -323,55 +372,46 @@ $result = $stmt->get_result();
                         <?php $no = $offset + 1; while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td><?= $no++; ?></td>
-                                <td><?= htmlspecialchars($row['nomor_surat']); ?></td>
-                                <td><?= htmlspecialchars($row['perihal']); ?></td>
-                                <td><?= htmlspecialchars($row['tgl_surat']); ?></td>
-                                <td><?= htmlspecialchars($row['terima_tanggal']); ?></td>
-                                <td><?= htmlspecialchars($row['pengirim']); ?></td>
-                                <td><?= htmlspecialchars($row['nama_sifat_surat']); ?></td>
-                                <td><?= htmlspecialchars($row['dokumen']); ?> </td>
+                                <td><?= htmlspecialchars($row['no_kontrak']); ?></td>
+                                <td><?= htmlspecialchars($row['perihal_kontrak']); ?></td>
+                                <td><?= htmlspecialchars($row['tgl_kontrak']); ?></td>
+                                <td><?= htmlspecialchars($row['dokumen_kontrak']); ?></td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="8" class="no-data">Tidak ada data.</td>
+                            <td colspan="5">Tidak ada data.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
-            <div class="export-buttons">
-                <a href="export_arsip_masuk.php?search=<?= urlencode($searchQuery); ?>&year=<?= $filterYear; ?>&month=<?= $filterMonth; ?>" class="btn btn-success">Export ke Excel</a>
 
-            </div>
             <!-- Halaman -->
             <ul class="pagination">
                 <?php if ($currentPage > 1): ?>
-                    <li><a href="?page=<?= $currentPage - 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>&year=<?= $filterYear; ?>&month=<?= $filterMonth; ?>">&laquo; Prev</a></li>
+                    <li><a href="?page=<?= $currentPage - 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">« Prev</a></li>
                 <?php else: ?>
-                    <li class="disabled"><span>&laquo; Prev</span></li>
+                    <li class="disabled"><span>« Prev</span></li>
                 <?php endif; ?>
 
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                     <li>
-                        <a href="?page=<?= $i; ?>&search=<?= htmlspecialchars($searchQuery); ?>&year=<?= $filterYear; ?>&month=<?= $filterMonth; ?>" class="<?= $i === $currentPage ? 'active' : ''; ?>">
+                        <a href="?page=<?= $i; ?>&search=<?= htmlspecialchars($searchQuery); ?>" class="<?= $i === $currentPage ? 'active' : ''; ?>">
                             <?= $i; ?>
                         </a>
                     </li>
                 <?php endfor; ?>
 
                 <?php if ($currentPage < $totalPages): ?>
-                    <li><a href="?page=<?= $currentPage + 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>&year=<?= $filterYear; ?>&month=<?= $filterMonth; ?>">Next &raquo;</a></li>
+                    <li><a href="?page=<?= $currentPage + 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">Next »</a></li>
                 <?php else: ?>
-                    <li class="disabled"><span>Next &raquo;</span></li>
+                    <li class="disabled"><span>Next »</span></li>
                 <?php endif; ?>
             </ul>
-
+            <div class="export-buttons">
+                <a href="export_arsip_kontrak.php?search=<?= urlencode($searchQuery); ?>&year=<?= $filterYear; ?>&month=<?= $filterMonth; ?>" class="btn btn-success">Export ke Excel</a>
+            </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer>
-    <p>https://dpmd.pamekasankab.go.id/</p>
-    </footer>
 </body>
 </html>

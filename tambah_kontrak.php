@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <form action="" method="post" class="form-container">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="no_kontrak">No Surat</label>
+                        <label for="no_kontrak">No Surat (.../...)</label>
                         <input type="text" id="no_kontrak" name="no_kontrak" placeholder="Input no surat masuk" required oninput="generateNoKontrak()">
                     </div>
                 </div>

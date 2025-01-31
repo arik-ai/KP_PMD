@@ -12,30 +12,30 @@ $conditions = "1";  // Default kondisi jika tidak ada filter
 $params = [];
 $paramTypes = "";
 
-// Kondisi pencarian
+// Kondisi pencarian pada beberapa kolom
 if ($searchQuery !== '') {
-    $conditions .= " AND (no_surat LIKE ? OR perihal_surat LIKE ? OR penerima LIKE ? OR nama_sifat_surat LIKE ?)";
+    $conditions .= " AND (no_keputusan LIKE ? OR perihal_keputusan LIKE ? OR tgl_keputusan LIKE ? OR dokumen_keputusan LIKE ?)";
     $searchWildcard = "%$searchQuery%";
     array_push($params, $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard);
-    $paramTypes .= "ssss";
+    $paramTypes .= "ssss"; // Ada empat parameter string
 }
 
 // Kondisi filter tahun
 if ($filterYear) {
-    $conditions .= " AND YEAR(tanggal_surat) = ?";
+    $conditions .= " AND YEAR(tgl_keputusan) = ?";
     array_push($params, $filterYear);
     $paramTypes .= "i";
 }
 
 // Kondisi filter bulan
 if ($filterMonth) {
-    $conditions .= " AND MONTH(tanggal_surat) = ?";
+    $conditions .= " AND MONTH(tgl_keputusan) = ?";
     array_push($params, $filterMonth);
     $paramTypes .= "i";
 }
 
 // Query untuk mengambil data surat masuk sesuai dengan filter
-$query = "SELECT * FROM surat_keluar WHERE $conditions";
+$query = "SELECT * FROM surat_keputusan WHERE $conditions";
 $stmt = $conn->prepare($query);
 if (!empty($params)) {
     $stmt->bind_param($paramTypes, ...$params);
@@ -45,7 +45,7 @@ $result = $stmt->get_result();
 
 // Header untuk file Excel
 header("Content-Type: application/vnd.ms-excel");
-header("Content-Disposition: attachment; filename=Arsip Surat Keluar.xls");
+header("Content-Disposition: attachment; filename=Arsip_Surat_Keputusan.xls");
 header("Pragma: no-cache");
 header("Expires: 0");
 
@@ -56,22 +56,19 @@ echo "<tr>
         <th>No. Surat</th>
         <th>Perihal</th>
         <th>Tanggal Surat</th>
-        <th>Penerima Surat</th>
-        <th>Sifat</th>
         <th>Dokumen</th>
     </tr>";
 
+// Jika ada data, tampilkan dalam tabel Excel
 if ($result->num_rows > 0) {
     $no = 1;
     while ($row = $result->fetch_assoc()) {
         echo "<tr>
                 <td>{$no}</td>
-                <td>{$row['no_surat']}</td>
-                <td>{$row['perihal_surat']}</td>
-                <td>{$row['tanggal_surat']}</td>
-                <td>{$row['penerima']}</td>
-                <td>{$row['nama_sifat_surat']}</td>
-                <td>{$row['dokumen_surat']}</td>
+                <td>{$row['no_keputusan']}</td>
+                <td>{$row['perihal_keputusan']}</td>
+                <td>{$row['tgl_keputusan']}</td>
+                <td>{$row['dokumen_keputusan']}</td>
             </tr>";
         $no++;
     }

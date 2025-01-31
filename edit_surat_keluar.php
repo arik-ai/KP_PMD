@@ -30,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $no_surat = mysqli_real_escape_string($conn, $_POST['no_surat']);
     $perihal_surat = mysqli_real_escape_string($conn, $_POST['perihal_surat']);
     $tanggal_surat = mysqli_real_escape_string($conn, $_POST['tanggal_surat']);
+    $agenda_keluar = mysqli_real_escape_string($conn, $_POST['agenda_keluar']);
     $penerima = mysqli_real_escape_string($conn, $_POST['penerima']);
     $id_sifat_surat = mysqli_real_escape_string($conn, $_POST['sifat_surat']);
     $dokumen = $data['dokumen_surat']; // Default dokumen lama
@@ -74,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         no_surat = '$no_surat', 
         perihal_surat = '$perihal_surat', 
         tanggal_surat = '$tanggal_surat', 
+        agenda_keluar = '$agenda_keluar', 
         penerima = '$penerima', 
         nama_sifat_surat = '$nama_sifat_surat', 
         dokumen_surat = '$dokumen' 
@@ -142,6 +144,10 @@ $sifat_surat_result = mysqli_query($conn, $sifat_surat_query);
                     <div class="form-group">
                         <label for="tanggal_surat">Tanggal Surat</label>
                         <input type="date" id="tanggal_surat" name="tanggal_surat" value="<?= htmlspecialchars($data['tanggal_surat']); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggal_surat">Agenda Surat</label>
+                        <input type="date" id="agenda_keluar" name="agenda_keluar" value="<?= htmlspecialchars($data['agenda_keluar']); ?>">
                     </div>
                 </div>
                 <div class="form-row">

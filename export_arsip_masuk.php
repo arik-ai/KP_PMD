@@ -14,7 +14,7 @@ $paramTypes = "";
 
 // Kondisi pencarian
 if ($searchQuery !== '') {
-    $conditions .= " AND (nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR sifat LIKE ?)";
+    $conditions .= " AND (nomor_surat LIKE ? OR perihal LIKE ? OR pengirim LIKE ? OR nama_sifat_surat LIKE ?)";
     $searchWildcard = "%$searchQuery%";
     array_push($params, $searchWildcard, $searchWildcard, $searchWildcard, $searchWildcard);
     $paramTypes .= "ssss";
@@ -73,7 +73,7 @@ if ($result->num_rows > 0) {
                 <td>{$row['tgl_surat']}</td>
                 <td>{$row['terima_tanggal']}</td>
                 <td>{$row['pengirim']}</td>
-                <td>{$row['sifat']}</td>
+                <td>{$row['nama_sifat_surat']}</td>
                 <td>{$row['dokumen']}</td>
             </tr>";
         $no++;

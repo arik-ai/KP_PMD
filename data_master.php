@@ -75,7 +75,6 @@ $result = $stmt->get_result();
     <title>Data Master - Sifat Surat</title>
     <link rel="stylesheet" href="style.css">
     <style>
-                /* Gaya Pagination */
                 .pagination {
                     display: flex;
                     justify-content: center;
@@ -121,15 +120,14 @@ $result = $stmt->get_result();
                 .pagination .disabled {
                     pointer-events: none;
                 }
-                /* Tabel */
                 .table {
                     width: 100%;
                     border-collapse: collapse;
-                    text-align: center; /* Center align content in the table */
+                    text-align: center; 
                 }
 
                 .table th, .table td {
-                    padding: 4px; /* Increased padding for better spacing */
+                    padding: 4px; 
                     text-align: center;
                     border: 1px solid #ddd;
                 }
@@ -140,10 +138,9 @@ $result = $stmt->get_result();
                 }
 
                 .table th, .table td {
-                    vertical-align: middle; /* Vertically center content */
+                    vertical-align: middle;
                 }
 
-                /* Atur lebar kolom sesuai dengan kontennya */
                 .table th:nth-child(1), .table td:nth-child(1) {
                     width: 5%;
                 }
@@ -157,9 +154,9 @@ $result = $stmt->get_result();
                 }
 
                 .btn {
-                    padding: 6px 12px; /* Smaller padding */
-                    font-size: 14px; /* Smaller font size */
-                    border-radius: 4px; /* Slightly smaller border-radius */
+                    padding: 6px 12px; 
+                    font-size: 14px;
+                    border-radius: 4px; 
                 }
 
 
@@ -171,9 +168,9 @@ $result = $stmt->get_result();
                     background-color: #ffc107;
                     color: white;
                     border: none;
-                    padding: 6px 12px; /* Smaller padding */
-                    border-radius: 4px; /* Slightly smaller border-radius */
-                    font-size: 14px; /* Smaller font size */
+                    padding: 6px 12px; 
+                    border-radius: 4px; 
+                    font-size: 14px; 
                     text-decoration: none;
                     display: inline-block;
                 }
@@ -186,9 +183,9 @@ $result = $stmt->get_result();
                     background-color: #dc3545;
                     color: white;
                     border: none;
-                    padding: 6px 12px; /* Smaller padding */
-                    border-radius: 4px; /* Slightly smaller border-radius */
-                    font-size: 14px; /* Smaller font size */
+                    padding: 6px 12px;
+                    border-radius: 4px; 
+                    font-size: 14px; 
                     text-decoration: none;
                     display: inline-block;
                 }
@@ -211,7 +208,7 @@ $result = $stmt->get_result();
                 .btn-info:hover {
                     background-color: #218838;
                 }
-                /* Styling Form */
+
                 .form-container {
                     margin-bottom: 20px;
                     padding: 15px;
@@ -271,7 +268,6 @@ $result = $stmt->get_result();
             </div>
         </div>
 
-        <!-- Add Sifat Surat Form -->
         <div class="container">
             <div class="form-container">
             <!-- Table Content -->
@@ -310,7 +306,7 @@ $result = $stmt->get_result();
                 </tbody>
             </table>
 
-            <!-- Pagination -->
+            <!-- Halaman -->
             <ul class="pagination">
                 <?php if ($currentPage > 1): ?>
                     <li><a href="?page=<?= $currentPage - 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">&laquo; Prev</a></li>

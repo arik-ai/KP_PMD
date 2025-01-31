@@ -9,7 +9,7 @@ if (!isset($_SESSION['username'])) {
 
 include 'db.php';
 
-// Konfigurasi pagination
+// untuk halaman
 $perPage = 10;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($currentPage - 1) * $perPage;
@@ -19,8 +19,8 @@ $searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
 $filterYear = isset($_GET['year']) ? (int)$_GET['year'] : '';
 $filterMonth = isset($_GET['month']) ? (int)$_GET['month'] : '';
 
-// Menyiapkan kondisi tambahan untuk filter tahun dan bulan
-$conditions = "1"; // Default kondisi (menampilkan semua data)
+// tambahan untuk filter tahun dan bulan
+$conditions = "1";
 $params = [];
 $paramTypes = "";
 
@@ -43,7 +43,7 @@ if ($filterMonth) {
     $paramTypes .= "i";
 }
 
-// Hitung total data
+// umtuk hitung total data
 $totalQuery = "SELECT COUNT(*) AS total FROM surat_keluar WHERE $conditions";
 $stmtTotal = $conn->prepare($totalQuery);
 if (!empty($params)) {
@@ -54,11 +54,9 @@ $resultTotal = $stmtTotal->get_result();
 $totalData = $resultTotal->fetch_assoc()['total'];
 $totalPages = ceil($totalData / $perPage);
 
-// Query data dengan limit dan offset
 $sql = "SELECT * FROM surat_keluar WHERE $conditions LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($sql);
 
-// Gabungkan parameter tambahan untuk LIMIT dan OFFSET
 array_push($params, $perPage, $offset);
 $paramTypes .= "ii";
 
@@ -74,7 +72,6 @@ $result = $stmt->get_result();
     <title>Daftar Surat Keluar</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Gaya untuk filter (input, select, dan button) */
         .search-bar {
             display: flex;
             gap: 15px;
@@ -112,7 +109,6 @@ $result = $stmt->get_result();
             background-color: #0056b3;
         }
 
-        /* Gaya untuk tombol Export */
         .export-buttons {
             margin-top: 20px;
         }
@@ -199,15 +195,15 @@ $result = $stmt->get_result();
             border-radius: 5px;
             cursor: default;
         }
-                        /* Tabel */
+                    
                         .table {
                     width: 100%;
                     border-collapse: collapse;
-                    text-align: center; /* Center align content in the table */
+                    text-align: center;
                 }
 
                 .table th, .table td {
-                    padding: 4px; /* Increased padding for better spacing */
+                    padding: 4px;
                     text-align: center;
                     border: 1px solid #ddd;
                 }
@@ -218,10 +214,10 @@ $result = $stmt->get_result();
                 }
 
                 .table th, .table td {
-                    vertical-align: middle; /* Vertically center content */
+                    vertical-align: middle;
                 }
 
-                /* Atur lebar kolom sesuai dengan kontennya */
+    
                 .table th:nth-child(1), .table td:nth-child(1) {
                     width: 5%;
                 }
@@ -335,7 +331,7 @@ $result = $stmt->get_result();
                 <a href="export_arsip_keluar.php?search=<?= urlencode($searchQuery); ?>&year=<?= $filterYear; ?>&month=<?= $filterMonth; ?>" class="btn btn-success">Export ke Excel</a>
             </div>
 
-            <!-- Pagination -->
+            <!-- Halaman -->
             <ul class="pagination">
                 <?php if ($currentPage > 1): ?>
                     <li><a href="?page=<?= $currentPage - 1; ?>&search=<?= htmlspecialchars($searchQuery); ?>">&laquo; Prev</a></li>

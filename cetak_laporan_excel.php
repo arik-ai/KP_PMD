@@ -5,7 +5,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-require 'vendor/autoload.php'; // Autoload PhpSpreadsheet
+require 'vendor/autoload.php'; 
 
 include "db.php";
 if ($conn->connect_error) {

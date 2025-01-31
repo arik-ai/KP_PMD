@@ -38,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $kode_surat = mysqli_real_escape_string($conn, $_POST['kode_surat']);
     $perihal_surat = mysqli_real_escape_string($conn, $_POST['perihal_surat']);
     $tanggal_surat = mysqli_real_escape_string($conn, $_POST['tanggal_surat']);
+    $agenda_keluar = !empty($_POST['agenda_keluar']) ? mysqli_real_escape_string($conn, $_POST['agenda_keluar']) : NULL;
     $penerima = mysqli_real_escape_string($conn, $_POST['penerima']);
     $id_sifat_surat = mysqli_real_escape_string($conn, $_POST['sifat_surat']);
     $user_input_keluar = $_SESSION['id']; // ID pengguna yang sedang login
@@ -54,13 +55,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $no_surat = generateNoSurat($conn, $tanggal_surat, $kode_surat);
 
     // Simpan data ke tabel surat_keluar
-    $query = "INSERT INTO surat_keluar (no_surat, tanggal_surat, perihal_surat, penerima, nama_sifat_surat, user_input_keluar) 
-              VALUES (?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO surat_keluar (no_surat, tanggal_surat, agenda_keluar, perihal_surat, penerima, nama_sifat_surat, user_input_keluar) 
+              VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("sssssi", $no_surat, $tanggal_surat, $perihal_surat, $penerima, $nama_sifat_surat, $user_input_keluar);
+    $stmt->bind_param("ssssssi", $no_surat, $tanggal_surat, $agenda_keluar, $perihal_surat, $penerima, $nama_sifat_surat, $user_input_keluar);
 
     if ($stmt->execute()) {
-        // Jika berhasil, arahkan ke detail_surat.php dengan parameter no_surat
+        // Jika berhasil, arahkan ke detail_surat_keluar.php dengan parameter id
         header("Location: detail_surat_keluar.php?id=" . urlencode($stmt->insert_id));
         exit;
     } else {
@@ -126,6 +127,10 @@ $sifat_surat_result = $conn->query($sifat_surat_query);
                     <div class="form-group">
                         <label for="tanggal_surat">Tanggal Surat</label>
                         <input type="date" id="tanggal_surat" name="tanggal_surat" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggal_surat">Agenda Surat</label>
+                        <input type="date" id="agenda_keluar" name="agenda_keluar">
                     </div>
                     <div class="form-group">
                         <label for="penerima">Penerima</label>

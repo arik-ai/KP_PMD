@@ -3,7 +3,7 @@
 include 'db.php';
 
 if (isset($_GET['id'])) {
-    $id = intval($_GET['id']); // Pastikan ID di-sanitasi untuk keamanan
+    $id = intval($_GET['id']); 
 
     // Ambil nama file dokumen berdasarkan ID dari database
     $query = "SELECT dokumen_surat FROM surat_keluar WHERE id_surat_keluar = ?";
@@ -18,9 +18,9 @@ if (isset($_GET['id'])) {
 
         // Periksa apakah nama file sudah mencakup subfolder 'uploads/'
         if (strpos($dokumen, 'uploads/') === 0) {
-            $file_path = __DIR__ . '/' . $dokumen; // Jika sudah termasuk 'uploads/', langsung gunakan
+            $file_path = __DIR__ . '/' . $dokumen; 
         } else {
-            $file_path = __DIR__ . '/uploads/' . $dokumen; // Jika tidak, tambahkan 'uploads/'
+            $file_path = __DIR__ . '/uploads/' . $dokumen; 
         }
 
         if (!empty($dokumen) && file_exists($file_path)) {

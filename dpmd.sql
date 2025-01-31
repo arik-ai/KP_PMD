@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 30, 2025 at 03:02 AM
+-- Generation Time: Jan 31, 2025 at 04:44 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -49,7 +49,7 @@ INSERT INTO `inventaris` (`id_inventaris`, `kode_barang`, `waktu_pengadaan`, `na
 (10, '', NULL, 'Cermin', 1, 'Bidang PEMDES', 'Baik', ''),
 (14, '', NULL, 'Cermin', 1, 'Bidang PPM', 'Baik', ''),
 (16, '', NULL, 'Meja', 5, 'Bidang PKSB', 'Baik', ''),
-(17, 'C03', '2025-01-03', 'saputangan', 30, 'Bidang PPM', 'Baik', '');
+(17, 'C03', '2025-01-03', 'saputangan', 30, 'Bidang PPM', 'Baik', '1738287661_20231010_092435.png');
 
 -- --------------------------------------------------------
 
@@ -70,7 +70,8 @@ INSERT INTO `sifat_surat` (`id_sifat`, `nama_sifat_surat`) VALUES
 (1, 'biasa'),
 (4, 'rahasia'),
 (5, 'penting'),
-(7, 'lumayan');
+(7, 'sangat penting'),
+(10, 'lumayan');
 
 -- --------------------------------------------------------
 
@@ -85,6 +86,7 @@ CREATE TABLE `surat_keluar` (
   `tanggal_surat` date NOT NULL,
   `dokumen_surat` varchar(90) NOT NULL,
   `penerima` varchar(90) NOT NULL,
+  `agenda_keluar` date DEFAULT NULL,
   `nama_sifat_surat` varchar(255) NOT NULL,
   `user_input_keluar` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -93,27 +95,29 @@ CREATE TABLE `surat_keluar` (
 -- Dumping data for table `surat_keluar`
 --
 
-INSERT INTO `surat_keluar` (`id_surat_keluar`, `no_surat`, `perihal_surat`, `tanggal_surat`, `dokumen_surat`, `penerima`, `nama_sifat_surat`, `user_input_keluar`) VALUES
-(46, '400/01/432.312/2025', 'balasan', '2025-01-15', '22-028_Andre_PAW C (1) (2).pdf', 'dinas', 'biasa', NULL),
-(48, '542/01/432.312/2026', 'pengajuan', '2026-02-15', 'BENDAHARA.jpg', 'bupati', 'Penting', NULL),
-(49, '400/02/432.312/2026', 'pertemuan', '2026-06-15', 'Usecase.png', 'bupati', 'Penting', NULL),
-(50, '400/03/432.312/2025', 'pertemuan', '2025-01-15', 'LAPORAN TUGAS PRAKTIKUM.docx', 'bupati', 'Rahasia', NULL),
-(51, '501/04/432.312/2025', 'balasan', '2025-01-15', 'Screenshot (4).png', 'dinas', 'Biasa', NULL),
-(52, '501/05/432.312/2025', 'pengajuan', '2025-01-15', 'Screenshot (4).png', 'dinas', 'lumayan', NULL),
-(53, '501.3/06/432.312/2025', 'pertemuan', '2025-01-11', 'laporan_surat_2026.pdf', 'bupati', 'Penting', NULL),
-(55, '400.23/03/432.312/2026', 'pertemuan', '2026-01-29', 'laporan_surat_2025 (4).pdf', 'bupati', 'Penting', NULL),
-(56, '400/07/432.312/2025', 'pertemuan', '2025-01-23', 'Screenshot (5).png', 'bupati', 'Penting', NULL),
-(57, '400/008/432.312/2025', 'pertemuan di balai desa larangan dalam', '2025-01-22', 'laporan_surat_2026.pdf', 'kepala desa larangan dalam', 'biasa', NULL),
-(62, '400/012/432.312/2025', 'pertemuan', '2025-01-22', 'laporan_surat_2025 (6).pdf', 'bupati', 'penting', NULL),
-(63, '456.76.2/013/432.312/2025', 'pertemuan', '2025-01-22', 'laporan_surat_2026 (1).pdf', 'dinas', 'biasa', NULL),
-(64, '321/014/432.312/2025', 'pertemuan', '2025-01-22', 'laporan_surat_2025 (5).pdf', 'bupati', 'biasa', NULL),
-(65, '501.0/015/432.312/2025', 'pertemuan bupati di kantor kepala desa', '2025-01-09', 'laporan_surat_2026 (1).pdf', 'bupati', 'rahasia', NULL),
-(66, '400/016/432.312/2025', 'pertemuan cccccccc', '2025-01-25', 'laporan_surat_2025 (3).pdf', 'bupati', 'rahasia', NULL),
-(67, '9087/017/432.312/2025', 'Pengajuan', '2025-01-24', 'laporan_surat_2026.pdf', 'camat', 'biasa', NULL),
-(68, '90.088/018/432.312/2025', 'Pengajuan', '2025-01-18', '', 'camat', 'rahasia', NULL),
-(69, '908.080/019/432.312/2025', 'Pengajuan', '2025-01-18', '', 'camat', 'rahasia', NULL),
-(70, '987.088/020/432.312/2025', 'Pengajuan', '2025-01-17', '', 'camat', 'rahasia', 2),
-(71, '9087.08/021/432.312/2025', 'Pengajuan', '2025-01-24', '', 'camat', 'rahasia', 2);
+INSERT INTO `surat_keluar` (`id_surat_keluar`, `no_surat`, `perihal_surat`, `tanggal_surat`, `dokumen_surat`, `penerima`, `agenda_keluar`, `nama_sifat_surat`, `user_input_keluar`) VALUES
+(46, '400/01/432.312/2025', 'balasan', '2025-01-15', '22-028_Andre_PAW C (1) (2).pdf', 'dinas', NULL, 'biasa', NULL),
+(48, '542/01/432.312/2026', 'pengajuan', '2026-02-15', 'BENDAHARA.jpg', 'bupati', NULL, 'Penting', NULL),
+(49, '400/02/432.312/2026', 'pertemuan', '2026-06-15', 'Usecase.png', 'bupati', NULL, 'Penting', NULL),
+(50, '400/03/432.312/2025', 'pertemuan', '2025-01-15', 'LAPORAN TUGAS PRAKTIKUM.docx', 'bupati', NULL, 'Rahasia', NULL),
+(51, '501/04/432.312/2025', 'balasan', '2025-01-15', 'Screenshot (4).png', 'dinas', NULL, 'Biasa', NULL),
+(52, '501/05/432.312/2025', 'pengajuan', '2025-01-15', 'Screenshot (4).png', 'dinas', NULL, 'lumayan', NULL),
+(53, '501.3/06/432.312/2025', 'pertemuan', '2025-01-11', 'laporan_surat_2026.pdf', 'bupati', NULL, 'Penting', NULL),
+(55, '400.23/03/432.312/2026', 'pertemuan', '2026-01-29', 'laporan_surat_2025 (4).pdf', 'bupati', NULL, 'Penting', NULL),
+(56, '400/07/432.312/2025', 'pertemuan', '2025-01-23', 'Screenshot (5).png', 'bupati', NULL, 'Penting', NULL),
+(57, '400/008/432.312/2025', 'pertemuan di balai desa larangan dalam', '2025-01-22', 'laporan_surat_2026.pdf', 'kepala desa larangan dalam', NULL, 'biasa', NULL),
+(62, '400/012/432.312/2025', 'pertemuan', '2025-01-22', 'laporan_surat_2025 (6).pdf', 'bupati', NULL, 'penting', NULL),
+(63, '456.76.2/013/432.312/2025', 'pertemuan', '2025-01-22', 'laporan_surat_2026 (1).pdf', 'dinas', NULL, 'biasa', NULL),
+(64, '321/014/432.312/2025', 'pertemuan', '2025-01-22', 'laporan_surat_2025 (5).pdf', 'bupati', NULL, 'biasa', NULL),
+(65, '501.0/015/432.312/2025', 'pertemuan bupati di kantor kepala desa', '2025-01-09', 'laporan_surat_2026 (1).pdf', 'bupati', NULL, 'rahasia', NULL),
+(66, '400/016/432.312/2025', 'pertemuan cccccccc', '2025-01-25', 'laporan_surat_2025 (3).pdf', 'bupati', NULL, 'rahasia', NULL),
+(67, '9087/017/432.312/2025', 'Pengajuan', '2025-01-24', 'laporan_surat_2026.pdf', 'camat', NULL, 'biasa', NULL),
+(68, '90.088/018/432.312/2025', 'Pengajuan', '2025-01-18', '', 'camat', NULL, 'rahasia', NULL),
+(69, '908.080/019/432.312/2025', 'Pengajuan', '2025-01-18', '', 'camat', NULL, 'rahasia', NULL),
+(70, '987.088/020/432.312/2025', 'Pengajuan', '2025-01-17', '', 'camat', NULL, 'rahasia', 2),
+(71, '9087.08/021/432.312/2025', 'Pengajuan', '2025-01-24', '', 'camat', NULL, 'rahasia', 2),
+(72, '400.121/022/432.312/2025', 'pengajuan', '2025-01-24', '', 'dinas', '2025-01-30', 'rahasia', 1),
+(73, '400.090/023/432.312/2025', 'pengajuan', '2025-01-18', '', 'dinas', '2025-02-03', 'biasa', 1);
 
 -- --------------------------------------------------------
 
@@ -164,7 +168,8 @@ INSERT INTO `surat_kontrak` (`id_kontrak`, `no_kontrak`, `perihal_kontrak`, `tgl
 (3, '400.7/002/432.312/2025', 'kontrak kuliah', '2025-01-24', '22-028_Andre_PAW C (1).pdf', '2025-01-24', 1),
 (5, '400.7/003/432.312/2025', 'Kontrakan', '2025-01-25', 'ANALISIS EFESIENSI USAHA TANI TEMBAKAU DI DESA KONANG KECAMATAN GALIS KABUPATEN PAMEKASAN.pdf', '2025-02-07', 1),
 (6, '400.7/004/432.312/2025', 'Kontak', '2025-01-25', 'laporan_surat_2025 (5).pdf', '2025-01-30', 2),
-(8, '400.7/009/432.312/2025', 'kontrak kuliah', '2025-01-29', 'laporan_surat_2025 (6) (2).pdf', '2025-01-29', 1);
+(8, '400.7/009/432.312/2025', 'kontrak kuliah', '2025-01-29', 'laporan_surat_2025 (6) (2).pdf', '2025-01-29', 1),
+(9, '400.7/002/432.312/2025', 'kontrak kerja', '2025-01-31', '', '0000-00-00', 1);
 
 -- --------------------------------------------------------
 
@@ -211,7 +216,7 @@ INSERT INTO `surat_masuk` (`id_surat`, `nomor_surat`, `perihal`, `tgl_surat`, `t
 (29, '0879/jhs/2025', 'pengajuan', '2025-01-02', '2025-01-16', 'bupati', 'Rahasia', 'anjsbs', '2025-01-23', 2),
 (36, '907/hj/hg/2025', 'bjfvujyiguhkl', '2025-01-24', '2025-01-25', 'byjbjn', 'biasa', 'laporan_surat_2025.pdf', '0000-00-00', 1),
 (37, '907/hma/2025', 'pengajuan', '2025-01-24', '2025-01-25', 'sapek', 'biasa', 'laporan_surat_2026.pdf', '0000-00-00', 2),
-(38, '00998/hma/2025', 'pemberitahuan', '2025-01-25', '2025-01-11', 'camat', 'rahasia', 'laporan_surat_2025 (6).pdf', '2025-01-25', 1);
+(38, '00998/hma/2025', 'pemberitahuan', '2025-01-25', '2025-01-11', 'camat', 'rahasia', 'laporan_surat_2025 (6).pdf', '2025-01-31', 1);
 
 -- --------------------------------------------------------
 
@@ -334,13 +339,13 @@ ALTER TABLE `inventaris`
 -- AUTO_INCREMENT for table `sifat_surat`
 --
 ALTER TABLE `sifat_surat`
-  MODIFY `id_sifat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_sifat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `surat_keluar`
 --
 ALTER TABLE `surat_keluar`
-  MODIFY `id_surat_keluar` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `id_surat_keluar` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT for table `surat_keputusan`
@@ -352,7 +357,7 @@ ALTER TABLE `surat_keputusan`
 -- AUTO_INCREMENT for table `surat_kontrak`
 --
 ALTER TABLE `surat_kontrak`
-  MODIFY `id_kontrak` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_kontrak` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `surat_masuk`
