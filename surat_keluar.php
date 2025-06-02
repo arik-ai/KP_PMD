@@ -133,11 +133,11 @@ $result = $stmt->get_result();
         }
 
         .table th:nth-child(2), .table td:nth-child(2) {
-            width: 27%;
+            width: 25%;
         }
 
         .table th:nth-child(3), .table td:nth-child(3) {
-            width: 25%;
+            width: 20%;
         }
 
         .table th:nth-child(4), .table td:nth-child(4) {
@@ -153,6 +153,10 @@ $result = $stmt->get_result();
         }
 
         .table th:nth-child(7), .table td:nth-child(7) {
+            width: 8%;
+        }
+
+        .table th:nth-child(8), .table td:nth-child(8) {
             width: 50%;
         }
 
@@ -272,7 +276,9 @@ $result = $stmt->get_result();
                     <button class="btn btn-primary" type="submit">Search</button>
                 </form>
             </div>
+            <?php if ($_SESSION['role'] !== 'pimpinan') : ?>
             <a href="tambah_surat_keluar.php" class="btn btn-primary">Tambah Surat +</a>
+             <?php endif; ?>
             <table class="table">
                 <thead>
                     <tr>
@@ -281,8 +287,11 @@ $result = $stmt->get_result();
                         <th>Perihal</th>
                         <th>Tanggal Surat</th>
                         <th>Penerima</th>
+                        <th>Alamat</th>
                         <th>Sifat</th>
+                    <?php if ($_SESSION['role'] !== 'pimpinan') : ?>
                         <th colspan="5">Aksi</th>
+                    <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -294,6 +303,7 @@ $result = $stmt->get_result();
                                 <td><?= htmlspecialchars($row['perihal_surat']); ?></td>
                                 <td><?= htmlspecialchars($row['tanggal_surat']); ?></td>
                                 <td><?= htmlspecialchars($row['penerima']); ?></td>
+                                <td><?= htmlspecialchars($row['alamat']); ?></td>
                                 <td><?= htmlspecialchars($row['nama_sifat_surat']); ?></td>
                                 <td>
                                     <!-- Jika kolom 'file_upload' kosong, tampilkan tombol Upload -->

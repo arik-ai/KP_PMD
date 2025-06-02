@@ -1,25 +1,19 @@
 <?php
 session_start();
 
-// Periksa apakah pengguna sudah login
 if (!isset($_SESSION['username']) || !isset($_SESSION['id'])) {
-    // Jika belum login, arahkan ke halaman login
     header("Location: login.php");
     exit;
 }
 
-include 'db.php'; // Koneksi ke database
+include 'db.php';
 
-// Cek koneksi
 if (!$conn) {
     die("Koneksi gagal: " . mysqli_connect_error());
 }
 
-// Ambil ID kontrak dari URL
 if (isset($_GET['id'])) {
     $id_kontrak = $_GET['id'];
-
-    // Query untuk mendapatkan data kontrak berdasarkan id
     $query = "SELECT * FROM surat_kontrak WHERE id_kontrak = '$id_kontrak'";
     $result = mysqli_query($conn, $query);
 
@@ -31,50 +25,49 @@ if (isset($_GET['id'])) {
     }
 }
 
-// Proses update data jika form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ambil data dari form
     $no_kontrak = mysqli_real_escape_string($conn, $_POST['no_kontrak']);
     $perihal_kontrak = mysqli_real_escape_string($conn, $_POST['perihal_kontrak']);
     $tgl_kontrak = mysqli_real_escape_string($conn, $_POST['tgl_kontrak']);
     $agenda_kontrak = mysqli_real_escape_string($conn, $_POST['agenda_kontrak']);
-    
-    // Menangani upload file jika ada
+    $pihak1 = mysqli_real_escape_string($conn, $_POST['pihak1']);
+    $pihak2 = mysqli_real_escape_string($conn, $_POST['pihak2']);
+
     $dokumen_kontrak = '';
     if (isset($_FILES['dokumen_kontrak']) && $_FILES['dokumen_kontrak']['error'] == 0) {
-        $targetDir = "uploads/"; // Folder tempat menyimpan file
+        $targetDir = "uploads/";
         $fileName = basename($_FILES['dokumen_kontrak']['name']);
         $targetFile = $targetDir . $fileName;
         $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-        
-        // Validasi file
-        $allowedTypes = ['pdf', 'doc', 'docx']; // Format yang diperbolehkan
+
+        $allowedTypes = ['pdf', 'doc', 'docx'];
         if (in_array($fileType, $allowedTypes)) {
-            // Pindahkan file ke folder tujuan
             if (move_uploaded_file($_FILES['dokumen_kontrak']['tmp_name'], $targetFile)) {
                 $dokumen_kontrak = $fileName;
             } else {
-                echo "Sorry, there was an error uploading your file.";
+                echo "Error saat mengunggah file.";
                 exit;
             }
         } else {
-            echo "Sorry, only PDF, DOC, and DOCX files are allowed.";
+            echo "File harus dalam format PDF, DOC, atau DOCX.";
             exit;
         }
     }
 
-    // Query untuk update data kontrak
-    $updateQuery = "UPDATE surat_kontrak SET no_kontrak = '$no_kontrak', perihal_kontrak = '$perihal_kontrak', 
-                    tgl_kontrak = '$tgl_kontrak', agenda_kontrak = '$agenda_kontrak'";
+    $updateQuery = "UPDATE surat_kontrak SET 
+        no_kontrak = '$no_kontrak', 
+        perihal_kontrak = '$perihal_kontrak', 
+        tgl_kontrak = '$tgl_kontrak', 
+        agenda_kontrak = '$agenda_kontrak', 
+        pihak1 = '$pihak1', 
+        pihak2 = '$pihak2'";
 
-    // Jika ada file dokumen, tambahkan pada query update
     if ($dokumen_kontrak != '') {
         $updateQuery .= ", dokumen_kontrak = '$dokumen_kontrak'";
     }
 
     $updateQuery .= " WHERE id_kontrak = '$id_kontrak'";
 
-    // Eksekusi query
     if (mysqli_query($conn, $updateQuery)) {
         echo "<script>alert('Data berhasil diupdate!'); window.location.href='surat_perjanjian_kontrak.php';</script>";
     } else {
@@ -87,33 +80,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Surat Kontrak</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Remove the underline from the document link */
         .document-link {
             text-decoration: none;
-            color: #000; /* Optional: You can adjust the color to match your design */
+            color: #000;
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="logo">
-            <img src="logo.png" alt="Logo">
+            <img src="logo.png" alt="Logo" />
         </div>
         <ul class="sidebar-menu">
-            <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
-            <li><a href="surat_masuk.php" ><span class="icon">📂</span> Data Surat Masuk</a></li>
-            <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
-            <li><a href="surat_perjanjian_kontrak.php" class="active"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
-            <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
-            <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
-            <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
-            <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
-            <li><a href="data_master.php"><span class="icon">⚙️</span> Data Master</a></li>
-            <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
+            <li><a href="index.php">🏠 Dashboard</a></li>
+            <li><a href="surat_masuk.php">📂 Data Surat Masuk</a></li>
+            <li><a href="surat_keluar.php">📤 Data Surat Keluar</a></li>
+            <li><a href="surat_perjanjian_kontrak.php" class="active">📜 Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_keputusan.php">📋 Surat Keputusan</a></li>
+            <li><a href="surat_tugas.php">📄 Surat Tugas</a></li>
+            <li><a href="arsip.php">📚 Arsip Surat</a></li>
+            <li><a href="laporan.php">📊 Laporan</a></li>
+            <li><a href="data_master.php">⚙️ Data Master</a></li>
+            <li><a href="logout.php">🔒 Logout</a></li>
         </ul>
     </div>
 
@@ -155,10 +146,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="form-row">
                     <div class="form-group">
+                        <label for="pihak1">Pihak 1</label>
+                        <input type="text" id="pihak1" name="pihak1" value="<?= htmlspecialchars($row['pihak1']); ?>" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pihak2">Pihak 2</label>
+                        <input type="text" id="pihak2" name="pihak2" value="<?= htmlspecialchars($row['pihak2']); ?>" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
                         <label for="dokumen_kontrak">Dokumen Kontrak</label>
-                        <input type="file" id="dokumen_kontrak" name="dokumen_kontrak" accept=".pdf">
+                        <input type="file" id="dokumen_kontrak" name="dokumen_kontrak" accept=".pdf,.doc,.docx">
                         <?php if (!empty($row['dokumen_kontrak'])): ?>
-                            <p>Dokument Sekarang: <a href="uploads/<?= htmlspecialchars($row['dokumen_kontrak']); ?>" target="_blank" class="document-link"><?= htmlspecialchars($row['dokumen_kontrak']); ?></a></p>
+                            <p>Dokumen Sekarang: <a href="uploads/<?= htmlspecialchars($row['dokumen_kontrak']); ?>" target="_blank" class="document-link"><?= htmlspecialchars($row['dokumen_kontrak']); ?></a></p>
                         <?php endif; ?>
                     </div>
                 </div>

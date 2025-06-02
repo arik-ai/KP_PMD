@@ -297,8 +297,9 @@ $result = $stmt->get_result();
                 <input type="text" name="search" placeholder="Cari No Surat atau Perihal..." value="<?= htmlspecialchars($searchQuery); ?>" />
                 <button type="submit">Search</button>
             </form>
-
+            <?php if ($_SESSION['role'] !== 'pimpinan') : ?>
             <a href="tambah_keputusan.php" class="btn btn-primary">Tambah Surat +</a>
+             <?php endif; ?>
             <table class="table">
                 <thead>
                     <tr>
@@ -306,7 +307,9 @@ $result = $stmt->get_result();
                         <th>No. Surat</th>
                         <th>Perihal</th>
                         <th>Tanggal</th>
+                        <?php if ($_SESSION['role'] !== 'pimpinan') : ?>
                         <th colspan="5">Aksi</th>
+                         <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -317,6 +320,7 @@ $result = $stmt->get_result();
                                 <td><?= htmlspecialchars($row['no_keputusan']); ?></td>
                                 <td><?= htmlspecialchars($row['perihal_keputusan']); ?></td>
                                 <td><?= htmlspecialchars($row['tgl_keputusan']); ?></td>
+                                <?php if ($_SESSION['role'] !== 'pimpinan') : ?>
                                 <td><?php if (empty($row['dokumen_keputusan'])): ?>
                                      <a href="upload_keputusan.php?id=<?= $row['id_keputusan']; ?>" class="btn btn-primary">Upload</a>
                                     <?php endif; ?></td>
@@ -324,6 +328,7 @@ $result = $stmt->get_result();
                                 <td><a href="edit_keputusan.php?id=<?= $row['id_keputusan']; ?>" class="btn btn-warning">Edit</a></td>
                                 <td><a href="?id=<?= $row['id_keputusan']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a></td>
                                 <td><a href="detail_keputusan.php?id=<?= $row['id_keputusan']; ?>" class="btn btn-info">Detail</a></td>
+                                 <?php endif; ?>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>

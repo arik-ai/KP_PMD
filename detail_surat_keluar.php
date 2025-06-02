@@ -93,6 +93,10 @@ if (isset($_GET['id'])) {
                     <td><?= htmlspecialchars($row['penerima']); ?></td>
                 </tr>
                 <tr>
+                    <th>Alamat</th>
+                    <td><?= htmlspecialchars($row['alamat']); ?></td>
+                </tr>
+                <tr>
                     <th>Sifat Surat</th>
                     <td><?= htmlspecialchars($row['nama_sifat_surat']); ?></td>
                 </tr>

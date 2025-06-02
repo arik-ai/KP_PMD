@@ -120,7 +120,7 @@ $html = "
     </style>
 </head>
 <body>
-    <h1>Laporan Surat Masuk dan Keluar</h1>
+    <h1>Laporan Total Surat</h1>
     <h3>Tahun $tahun</h3>
 
     <table>

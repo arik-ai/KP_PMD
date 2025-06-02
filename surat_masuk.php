@@ -241,7 +241,7 @@ $result = $stmt->get_result();
         </ul>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main Content -->   
     <div class="main-content">
         <!-- Topbar -->
         <div class="topbar">
@@ -261,7 +261,9 @@ $result = $stmt->get_result();
                     <button class="btn btn-primary" type="submit">Search</button>
                 </form>
             </div>
+            <?php if ($_SESSION['role'] !== 'pimpinan') : ?>
             <a href="tambah_surat_masuk.php" class="btn btn-primary">Tambah Surat +</a>
+             <?php endif; ?>
             <table class="table">
                 <thead>
                     <tr>
@@ -272,7 +274,9 @@ $result = $stmt->get_result();
                         <th>Diterima Tanggal</th>
                         <th>Instansi Pengirim</th>
                         <th>sifat</th>
+                    <?php if ($_SESSION['role'] !== 'pimpinan') : ?>
                         <th colspan="4">Aksi</th>
+                    <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>

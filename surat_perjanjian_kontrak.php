@@ -11,7 +11,7 @@ include 'db.php'; // Include the database connection
 
 // Proses hapus data jika ada parameter `id`
 if (isset($_GET['id'])) {
-    $id = (int) $_GET['id']; // Pastikan ID adalah angka untuk keamanan
+    $id = (int) $_GET['id'];
 
     // Query hapus data
     $sql = "DELETE FROM surat_kontrak WHERE id_kontrak = ?";
@@ -26,7 +26,7 @@ if (isset($_GET['id'])) {
 }
 
 // Konfigurasi pagination
-$perPage = 10; // Jumlah data per halaman
+$perPage = 10;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($currentPage - 1) * $perPage;
 
@@ -185,9 +185,14 @@ $result = $stmt->get_result();
         .table th:nth-child(4), .table td:nth-child(4) {
             width: 15%;
         }
-
         .table th:nth-child(5), .table td:nth-child(5) {
-            width: 40%;
+            width: 15%;
+        }
+        .table th:nth-child(6), .table td:nth-child(6) {
+            width: 15%;
+        }
+        .table th:nth-child(7), .table td:nth-child(7) {
+            width: 50%;
         }
 
         /* Tombol */
@@ -256,30 +261,28 @@ $result = $stmt->get_result();
             background-color: #218838;
         }
     </style>
-</head>
-<body>
+</head><body>
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
             <img src="logo.png" alt="Logo" />
         </div>
         <ul class="sidebar-menu">
-            <li><a href="index.php"><span class="icon">🏠</span> Dashboard</a></li>
-            <li><a href="surat_masuk.php" ><span class="icon">📂</span> Data Surat Masuk</a></li>
-            <li><a href="surat_keluar.php"><span class="icon">📤</span> Data Surat Keluar</a></li>
-            <li><a href="surat_perjanjian_kontrak.php" class="active"><span class="icon">📜</span> Surat Perjanjian Kontrak</a></li>
-            <li><a href="surat_keputusan.php"><span class="icon">📋</span> Surat Keputusan</a></li>
-            <li><a href="surat_tugas.php"><span class="icon">📄</span> Surat Tugas</a></li>
-            <li><a href="arsip.php"><span class="icon">📚</span> Arsip Surat</a></li>
-            <li><a href="laporan.php"><span class="icon">📊</span> Laporan</a></li>
-            <li><a href="data_master.php"><span class="icon">⚙️</span> Data Master</a></li>
-            <li><a href="logout.php"><span class="icon">🔒</span> Logout</a></li>
+            <li><a href="index.php">🏠 Dashboard</a></li>
+            <li><a href="surat_masuk.php">📂 Data Surat Masuk</a></li>
+            <li><a href="surat_keluar.php">📤 Data Surat Keluar</a></li>
+            <li><a href="surat_perjanjian_kontrak.php" class="active">📜 Surat Perjanjian Kontrak</a></li>
+            <li><a href="surat_keputusan.php">📋 Surat Keputusan</a></li>
+            <li><a href="surat_tugas.php">📄 Surat Tugas</a></li>
+            <li><a href="arsip.php">📚 Arsip Surat</a></li>
+            <li><a href="laporan.php">📊 Laporan</a></li>
+            <li><a href="data_master.php">⚙️ Data Master</a></li>
+            <li><a href="logout.php">🔒 Logout</a></li>
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Topbar -->
         <div class="topbar">
             <h2>Administrasi</h2>
             <div class="profile">
@@ -288,7 +291,6 @@ $result = $stmt->get_result();
             </div>
         </div>
 
-        <!-- Table Content -->
         <div class="container">
             <h2>Daftar Surat Kontrak</h2>
 
@@ -298,7 +300,10 @@ $result = $stmt->get_result();
                 <button type="submit">Search</button>
             </form>
 
+            <?php if ($_SESSION['role'] !== 'pimpinan') : ?>
             <a href="tambah_kontrak.php" class="btn btn-primary">Tambah Surat +</a>
+            <?php endif; ?>
+
             <table class="table">
                 <thead>
                     <tr>
@@ -306,7 +311,11 @@ $result = $stmt->get_result();
                         <th>No. Surat</th>
                         <th>Perihal</th>
                         <th>Tanggal</th>
+                        <th>Pihak 1</th>
+                        <th>Pihak 2</th>
+                        <?php if ($_SESSION['role'] !== 'pimpinan') : ?>
                         <th colspan="5">Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -317,18 +326,24 @@ $result = $stmt->get_result();
                                 <td><?= htmlspecialchars($row['no_kontrak']); ?></td>
                                 <td><?= htmlspecialchars($row['perihal_kontrak']); ?></td>
                                 <td><?= htmlspecialchars($row['tgl_kontrak']); ?></td>
-                                <td><?php if (empty($row['dokumen_kontrak'])): ?>
-                                     <a href="upload_kontrak.php?id=<?= $row['id_kontrak']; ?>" class="btn btn-primary">Upload</a>
-                                    <?php endif; ?></td>
-                                    <td><a href="cetak_kontrak.php?id=<?= $row['id_kontrak']; ?>" class="btn btn-success" target="_blank">Cetak</a></td>
+                                <td><?= htmlspecialchars($row['pihak1']); ?></td>
+                                <td><?= htmlspecialchars($row['pihak2']); ?></td>
+                                <?php if ($_SESSION['role'] !== 'pimpinan') : ?>
+                                <td>
+                                    <?php if (empty($row['dokumen_kontrak'])): ?>
+                                    <a href="upload_kontrak.php?id=<?= $row['id_kontrak']; ?>" class="btn btn-primary">Upload</a>
+                                    <?php endif; ?>
+                                </td>
+                                <td><a href="cetak_kontrak.php?id=<?= $row['id_kontrak']; ?>" class="btn btn-success" target="_blank">Cetak</a></td>
                                 <td><a href="edit_kontrak.php?id=<?= $row['id_kontrak']; ?>" class="btn btn-warning">Edit</a></td>
                                 <td><a href="?id=<?= $row['id_kontrak']; ?>" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus data?')">Hapus</a></td>
                                 <td><a href="detail_kontrak.php?id=<?= $row['id_kontrak']; ?>" class="btn btn-info">Detail</a></td>
+                                <?php endif; ?>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="5">Tidak ada data.</td>
+                            <td colspan="11">Tidak ada data.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -359,7 +374,6 @@ $result = $stmt->get_result();
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
         <p>https://dpmd.pamekasankab.go.id/</p>
     </footer>
